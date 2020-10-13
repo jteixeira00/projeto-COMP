@@ -87,7 +87,7 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 
 int main(int argc, char *argv[]){
 	if (argc > 1){
-		if (strcmp(argv[1], "-1")==0){
+		if (strcmp(argv[1], "-l")==0){
 			flag1 = 1;
 		}
 		else if (strcmp(argv[1], "-e1")==0){
