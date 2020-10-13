@@ -1,4 +1,4 @@
-{
+%{
     #include <string.h>
     int flag1 = 1;
     int linha = 0;
