@@ -1,11 +1,17 @@
-%{
+{
     #include <string.h>
     int flag1 = 1;
     int linha = 0;
     int coluna = 0;
 
-
+    int commentstart_l;
+    int commentstart_c;
 %}
+
+
+%X SINGLECOMMENT
+%X MULTICOMMENT
+
 
 
 sinal       [+|-]
@@ -60,9 +66,40 @@ REALLIT     (0|[1-9]{numero}*"."{numero}*{expoente}?)|("."{numero}+{expoente}?)|
 {REALLIT}           {if(flag1==1){printf("REALLIT(%s)\n", yytext);}coluna+=yyleng;}
 
 
+"//"				{BEGIN SINGLECOMMENT;}
+{SINGLECOMMENT}{\n}	{linha++; coluna = 1; BEGIN 0;}
+{SINGLECOMMENT}.	{;}
+
+
+"/*"					{BEGIN MULTICOMMENT; commentstart_l = linha;commentstart_c = coluna; coluna +=yyleng;}
+{MULTICOMMENT}{\n}		{linha++;coluna = 1;}
+{MULTICOMMENT}<<EOF>>	{printf("Line %d, col %d : unterminated comment\n")}
+{MULTICOMMENT}.			{coluna+=yyleng;}
+{MULTICOMMENT}"*/"		{BEGIN 0; coluna+=yyleng;}
+
+
 %%
 
 int main(int argc, char *argv[]){
+	if (argc > 1){
+		if (strcmp(argv[1], "-1")==0){
+			flag1 = 1;
+		}
+		else if (strcmp(argv[1], "-e1")==0){
+			flag1 = 0;
+
+		}
+		else{
+			return 0;
+		}
+
+
+	}
+	if (argc==1){
+		flag1 = 0;
+
+	}
+
     yylex();
     return 0;
 }
