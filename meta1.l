@@ -1,3 +1,7 @@
+
+%X SINGLECOMMENT MULTICOMMENT
+
+
 %{
     #include <string.h>
     int flag1 = 1;
@@ -9,8 +13,6 @@
 %}
 
 
-%X SINGLECOMMENT
-%X MULTICOMMENT
 
 
 
@@ -67,15 +69,15 @@ REALLIT     (0|[1-9]{numero}*"."{numero}*{expoente}?)|("."{numero}+{expoente}?)|
 
 
 "//"				{BEGIN SINGLECOMMENT;}
-{SINGLECOMMENT}{\n}	{linha++; coluna = 1; BEGIN 0;}
-{SINGLECOMMENT}.	{;}
+<SINGLECOMMENT>\n	{linha++; coluna = 1; BEGIN 0;}
+<SINGLECOMMENT>.	{;}
 
 
 "/*"					{BEGIN MULTICOMMENT; commentstart_l = linha;commentstart_c = coluna; coluna +=yyleng;}
-{MULTICOMMENT}{\n}		{linha++;coluna = 1;}
-{MULTICOMMENT}<<EOF>>	{printf("Line %d, col %d : unterminated comment\n")}
-{MULTICOMMENT}.			{coluna+=yyleng;}
-{MULTICOMMENT}"*/"		{BEGIN 0; coluna+=yyleng;}
+<MULTICOMMENT>\n		{linha++;coluna = 1;}
+<MULTICOMMENT><<EOF>>	{printf("Line %d, col %d : unterminated comment\n")}
+<MULTICOMMENT>.			{coluna+=yyleng;}
+<MULTICOMMENT>"*/"		{BEGIN 0; coluna+=yyleng;}
 
 
 %%
