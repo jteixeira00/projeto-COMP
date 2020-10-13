@@ -1,6 +1,6 @@
 %{
     #include <string.h>
-    int flag1 = 0;
+    int flag1 = 1;
     int linha = 0;
     int coluna = 0;
 
@@ -63,3 +63,14 @@ RESERVED    "auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"long"|"regi
 ";"                 {if(flag1==1){printf("SEMI\n");}coluna+=yleng;}
 
 {RESERVED}          {if(flag1==1){printf("RESERVED(%s)\n", yytext);}coluna+=yleng;}
+
+%%
+
+int main(int argc, char *argv[]){
+    yylex();
+    return 0;
+}
+
+int yywrap(){
+    return 1;
+}
