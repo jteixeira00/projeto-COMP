@@ -1,5 +1,4 @@
-
-%X SINGLECOMMENT MULTICOMMENT
+%X SINGLECOMMENT MULTICOMMENT CHARLIT
 
 
 %{
@@ -10,6 +9,7 @@
 
     int commentstart_l;
     int commentstart_c;
+    char string[256] = "";
 %}
 
 
@@ -26,9 +26,10 @@ ID          {letra}({numero}*{letra}*)*
 INTLIT      {numero}+
 CHRLIT      \'[^\n\']\'|\'(\\n)\'|\'(\\t)\'|\'(\\\\)\'|\'\\\'\'|\'(\\\")\'|\'(\\{numeros07}{numeros07}?{numeros07}?)\'
 REALLIT     (0|[1-9]{numero}*"."{numero}*{expoente}?)|("."{numero}+{expoente}?)|(0|[1-9]{numero}*{expoente})
+RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Complex"|"_Imaginary"|"continue"|"restrict"|"default"|"do"|"long"|"inline"|"register"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatie"|"enum"|"extern"|"float"|"for"|"goto"
 
 %%
-
+{RESERVED}			{if(flag1==1){printf("RESERVED(%s)\n", yytext);}coluna+=yyleng;}
 "char"              {if(flag1==1){printf("CHAR\n");}coluna+=yyleng;}
 "else"              {if(flag1==1){printf("ELSE\n");}coluna+=yyleng;}
 "while"             {if(flag1==1){printf("WHILE\n");}coluna+=yyleng;}
@@ -65,8 +66,10 @@ REALLIT     (0|[1-9]{numero}*"."{numero}*{expoente}?)|("."{numero}+{expoente}?)|
 {ID}                {if(flag1==1){printf("ID(%s)\n", yytext);}coluna+=yyleng;}
 {INTLIT}            {if(flag1==1){printf("INTLIT(%s)\n", yytext);}coluna+=yyleng;}
 {CHRLIT}            {if(flag1==1){printf("CHRLIT(%s)\n", yytext);}coluna+=yyleng;}
-{REALLIT}           {if(flag1==1){printf("REALLIT(%s)\n", yytext);}coluna+=yyleng;}
+{REALLIT}           {if(flag1==1){printf("REALLIT(%s)\n", yytext);}coluna+=yyleng;}			
 
+.					{;}
+\n 					{;}
 
 "//"				{BEGIN SINGLECOMMENT;}
 <SINGLECOMMENT>\n	{linha++; coluna = 1; BEGIN 0;}
@@ -75,9 +78,9 @@ REALLIT     (0|[1-9]{numero}*"."{numero}*{expoente}?)|("."{numero}+{expoente}?)|
 
 "/*"					{BEGIN MULTICOMMENT; commentstart_l = linha;commentstart_c = coluna; coluna +=yyleng;}
 <MULTICOMMENT>\n		{linha++;coluna = 1;}
-<MULTICOMMENT><<EOF>>	{printf("Line %d, col %d : unterminated comment\n")}
+<MULTICOMMENT><<EOF>>	{printf("Line %d, col %d : unterminated comment\n", commentstart_l, commentstart_c);return 0;}
 <MULTICOMMENT>.			{coluna+=yyleng;}
-<MULTICOMMENT>"*/"		{BEGIN 0; coluna+=yyleng;}
+<MULTICOMMENT>"*/"		{coluna+=yyleng;BEGIN 0;}
 
 
 %%
