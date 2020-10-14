@@ -62,9 +62,10 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 "}"                 {if(flag1==1){printf("RBRACE\n");}coluna+=yyleng;}
 ")"                 {if(flag1==1){printf("RPAR\n");}coluna+=yyleng;}
 ";"                 {if(flag1==1){printf("SEMI\n");}coluna+=yyleng;}
+" "|\t|\f|\r		{coluna+=yyleng;}
+{INTLIT}            {if(flag1==1){printf("INTLIT(%s)\n", yytext);}coluna+=yyleng;}
 {REALLIT}           {if(flag1==1){printf("REALLIT(%s)\n", yytext);}coluna+=yyleng;}
 {ID}                {if(flag1==1){printf("ID(%s)\n", yytext);}coluna+=yyleng;}
-{INTLIT}            {if(flag1==1){printf("INTLIT(%s)\n", yytext);}coluna+=yyleng;}
 {CHRLIT}            {if(flag1==1){printf("CHRLIT(%s)\n", yytext);}coluna+=yyleng;}
 			
 
@@ -90,7 +91,7 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 
 int main(int argc, char *argv[]){
 	if (argc > 1){
-		if (strcmp(argv[1], "-1")==0){
+		if (strcmp(argv[1], "-l")==0){
 			flag1 = 1;
 		}
 		else if (strcmp(argv[1], "-e1")==0){
