@@ -1,15 +1,14 @@
-%X SINGLECOMMENT MULTICOMMENT CHARLIT
 
+%X SINGLECOMMENT MULTICOMMENT
 
 %{
     #include <string.h>
     int flag1 = 1;
-    int linha = 0;
-    int coluna = 0;
+    int linha = 1;
+    int coluna = 1;
 
     int commentstart_l;
     int commentstart_c;
-    char string[256] = "";
 %}
 
 
@@ -20,7 +19,7 @@ sinal       [+|-]
 letra       [a-zA-Z_]
 numero      [0-9]
 numeros07   [0-7]
-expoente    [eE]{sinal}?0|[1-9]{numero}*
+expoente    [eE]{sinal}?(0|[1-9]{numero}*)
 
 ID          {letra}({numero}*{letra}*)*
 INTLIT      {numero}+
@@ -63,13 +62,14 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 "}"                 {if(flag1==1){printf("RBRACE\n");}coluna+=yyleng;}
 ")"                 {if(flag1==1){printf("RPAR\n");}coluna+=yyleng;}
 ";"                 {if(flag1==1){printf("SEMI\n");}coluna+=yyleng;}
+{REALLIT}           {if(flag1==1){printf("REALLIT(%s)\n", yytext);}coluna+=yyleng;}
 {ID}                {if(flag1==1){printf("ID(%s)\n", yytext);}coluna+=yyleng;}
 {INTLIT}            {if(flag1==1){printf("INTLIT(%s)\n", yytext);}coluna+=yyleng;}
 {CHRLIT}            {if(flag1==1){printf("CHRLIT(%s)\n", yytext);}coluna+=yyleng;}
-{REALLIT}           {if(flag1==1){printf("REALLIT(%s)\n", yytext);}coluna+=yyleng;}			
+			
 
-.					{;}
-\n 					{;}
+.					{printf("Line %d, col %d: illegal character (%s)\n", linha, coluna, yytext);coluna+=yyleng;}
+\n 					{linha++; coluna=1;;}
 
 "//"				{BEGIN SINGLECOMMENT;}
 <SINGLECOMMENT>\n	{linha++; coluna = 1; BEGIN 0;}
@@ -78,16 +78,19 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 
 "/*"					{BEGIN MULTICOMMENT; commentstart_l = linha;commentstart_c = coluna; coluna +=yyleng;}
 <MULTICOMMENT>\n		{linha++;coluna = 1;}
-<MULTICOMMENT><<EOF>>	{printf("Line %d, col %d : unterminated comment\n", commentstart_l, commentstart_c);return 0;}
+<MULTICOMMENT><<EOF>>	{printf("Line %d, col %d: unterminated comment\n", commentstart_l, commentstart_c);return 0;}
 <MULTICOMMENT>.			{coluna+=yyleng;}
 <MULTICOMMENT>"*/"		{coluna+=yyleng;BEGIN 0;}
+
+
+
 
 
 %%
 
 int main(int argc, char *argv[]){
 	if (argc > 1){
-		if (strcmp(argv[1], "-l")==0){
+		if (strcmp(argv[1], "-1")==0){
 			flag1 = 1;
 		}
 		else if (strcmp(argv[1], "-e1")==0){
