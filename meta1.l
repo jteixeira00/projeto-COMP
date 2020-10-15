@@ -64,16 +64,22 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 "}"                 {if(flag1==1){printf("RBRACE\n");}coluna+=yyleng;}
 ")"                 {if(flag1==1){printf("RPAR\n");}coluna+=yyleng;}
 ";"                 {if(flag1==1){printf("SEMI\n");}coluna+=yyleng;}
-\'[^\n\']*|'\n|'\\'	{printf("Line %d, col %d: unterminated char constant\n", linha, coluna); coluna+=yyleng;}
-" "|\t				{coluna+=yyleng;}
+
+" "|\t|\r|\f		{coluna+=yyleng;}
 {REALLIT}           {if(flag1==1){printf("REALLIT(%s)\n", yytext);}coluna+=yyleng;}
 {ID}                {if(flag1==1){printf("ID(%s)\n", yytext);}coluna+=yyleng;}
 {INTLIT}            {if(flag1==1){printf("INTLIT(%s)\n", yytext);}coluna+=yyleng;}
 {CHRLIT}            {if(flag1==1){printf("CHRLIT(%s)\n", yytext);}coluna+=yyleng;}
-		
+
+\'([^\n'\\]|[\\.])*'	{printf("Line %d, col %d: invalid char constant %s\n", linha, coluna,yytext); coluna+=yyleng;}
+
+
+
+
+\'([^\n'\\]|[\\.])*\\?|'\n|'\\'	{printf("Line %d, col %d: unterminated char constant\n", linha, coluna); coluna+=yyleng;}
 
 .					{printf("Line %d, col %d: illegal character (%s)\n", linha, coluna, yytext);coluna+=yyleng;}
-\n 					{linha++; coluna=1;;}
+\n|\n\ 					{linha++; coluna=1;;}
 
 "//"				{BEGIN SINGLECOMMENT;}
 <SINGLECOMMENT>\n	{linha++; coluna = 1; BEGIN 0;}
