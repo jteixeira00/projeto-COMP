@@ -66,17 +66,14 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 ";"                 {if(flag1==1){printf("SEMI\n");}coluna+=yyleng;}
 
 " "|\t|\r|\f		{coluna+=yyleng;}
+{INTLIT}            {if(flag1==1){printf("INTLIT(%s)\n", yytext);}coluna+=yyleng;}
 {REALLIT}           {if(flag1==1){printf("REALLIT(%s)\n", yytext);}coluna+=yyleng;}
 {ID}                {if(flag1==1){printf("ID(%s)\n", yytext);}coluna+=yyleng;}
-{INTLIT}            {if(flag1==1){printf("INTLIT(%s)\n", yytext);}coluna+=yyleng;}
+
 {CHRLIT}            {if(flag1==1){printf("CHRLIT(%s)\n", yytext);}coluna+=yyleng;}
 
-\'([^\n'\\]|[\\.])*'	{printf("Line %d, col %d: invalid char constant (%s)\n", linha, coluna,yytext); coluna+=yyleng;}
-
-
-
-
-\'([^\n'\\]|[\\.])*\\?	{printf("Line %d, col %d: unterminated char constant\n", linha, coluna); coluna=1;}
+\'([^\n'\\]|(\\.))*'	{printf("Line %d, col %d: invalid char constant (%s)\n", linha, coluna,yytext); coluna+=yyleng;}
+\'([^\n'\\]|(\\.))*\\?	{printf("Line %d, col %d: unterminated char constant\n", linha, coluna); coluna=1;}
 
 
 \n|\r\n|\r 					{linha++; coluna=1;;}
