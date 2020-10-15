@@ -19,12 +19,12 @@ sinal       [+|-]
 letra       [a-zA-Z_]
 numero      [0-9]
 numeros07   [0-7]
-expoente    [eE]{sinal}?(0|[1-9]{numero}*)
+expoente    [eE]{sinal}?{numero}+
 
 ID          {letra}({numero}*{letra}*)*
 INTLIT      {numero}+
 CHRLIT      \'[^\n\\']\'|\'(\\n)\'|\'(\\t)\'|\'(\\\\)\'|\'\\\'\'|\'(\\\")\'|\'(\\{numeros07}{numeros07}?{numeros07}?)\'
-REALLIT     (0|[1-9]{numero}*"."{numero}*{expoente}?)|("."{numero}+{expoente}?)|(0|[1-9]{numero}*{expoente})
+REALLIT     ({numero}+"."{numero}*{expoente}?)|("."{numero}+{expoente}?)|({numero}+{expoente})
 RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Complex"|"_Imaginary"|"continue"|"restrict"|"default"|"do"|"long"|"inline"|"register"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatie"|"enum"|"extern"|"float"|"for"|"goto"
 
 
