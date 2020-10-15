@@ -23,7 +23,7 @@ expoente    [eE]{sinal}?(0|[1-9]{numero}*)
 
 ID          {letra}({numero}*{letra}*)*
 INTLIT      {numero}+
-CHRLIT      \'[^\n\']\'|\'(\\n)\'|\'(\\t)\'|\'(\\\\)\'|\'\\\'\'|\'(\\\")\'|\'(\\{numeros07}{numeros07}?{numeros07}?)\'
+CHRLIT      \'[^\n\\']\'|\'(\\n)\'|\'(\\t)\'|\'(\\\\)\'|\'\\\'\'|\'(\\\")\'|\'(\\{numeros07}{numeros07}?{numeros07}?)\'
 REALLIT     (0|[1-9]{numero}*"."{numero}*{expoente}?)|("."{numero}+{expoente}?)|(0|[1-9]{numero}*{expoente})
 RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Complex"|"_Imaginary"|"continue"|"restrict"|"default"|"do"|"long"|"inline"|"register"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatie"|"enum"|"extern"|"float"|"for"|"goto"
 
@@ -71,15 +71,19 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 {INTLIT}            {if(flag1==1){printf("INTLIT(%s)\n", yytext);}coluna+=yyleng;}
 {CHRLIT}            {if(flag1==1){printf("CHRLIT(%s)\n", yytext);}coluna+=yyleng;}
 
-\'([^\n'\\]|[\\.])*'	{printf("Line %d, col %d: invalid char constant %s\n", linha, coluna,yytext); coluna+=yyleng;}
+\'([^\n'\\]|[\\.])*'	{printf("Line %d, col %d: invalid char constant (%s)\n", linha, coluna,yytext); coluna+=yyleng;}
 
 
 
 
-\'([^\n'\\]|[\\.])*\\?|'\n|'\\'	{printf("Line %d, col %d: unterminated char constant\n", linha, coluna); coluna+=yyleng;}
+\'([^\n'\\]|[\\.])*\\?	{printf("Line %d, col %d: unterminated char constant\n", linha, coluna); coluna=1;}
 
+
+\n|\r\n|\r 					{linha++; coluna=1;;}
 .					{printf("Line %d, col %d: illegal character (%s)\n", linha, coluna, yytext);coluna+=yyleng;}
-\n|\n\ 					{linha++; coluna=1;;}
+
+
+
 
 "//"				{BEGIN SINGLECOMMENT;}
 <SINGLECOMMENT>\n	{linha++; coluna = 1; BEGIN 0;}
