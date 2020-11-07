@@ -30,30 +30,174 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 
 
 %%
-{RESERVED}			{if(flag1==1){printf("RESERVED(%s)\n", yytext);}coluna+=yyleng;}
-"char"              {if(flag1==1){printf("CHAR\n");}coluna+=yyleng;}
-"else"              {if(flag1==1){printf("ELSE\n");}coluna+=yyleng;}
-"while"             {if(flag1==1){printf("WHILE\n");}coluna+=yyleng;}
-"if"                {if(flag1==1){printf("IF\n");}coluna+=yyleng;}
-"int"               {if(flag1==1){printf("INT\n");}coluna+=yyleng;}
-"short"             {if(flag1==1){printf("SHORT\n");}coluna+=yyleng;}
-"double"            {if(flag1==1){printf("DOUBLE\n");}coluna+=yyleng;}
-"return"            {if(flag1==1){printf("RETURN\n");}coluna+=yyleng;}
-"void"              {if(flag1==1){printf("VOID\n");}coluna+=yyleng;}
-"&"                 {if(flag1==1){printf("BITWISEAND\n");}coluna+=yyleng;}
-"|"                 {if(flag1==1){printf("BITWISEOR\n");}coluna+=yyleng;}
-"^"                 {if(flag1==1){printf("BITWISEXOR\n");}coluna+=yyleng;}
-"&&"                {if(flag1==1){printf("AND\n");}coluna+=yyleng;}
-"="                 {if(flag1==1){printf("ASSIGN\n");}coluna+=yyleng;}
-"*"                 {if(flag1==1){printf("MUL\n");}coluna+=yyleng;}
-","                 {if(flag1==1){printf("COMMA\n");}coluna+=yyleng;}
-"/"                 {if(flag1==1){printf("DIV\n");}coluna+=yyleng;}
-"=="                {if(flag1==1){printf("EQ\n");}coluna+=yyleng;}
-">="                {if(flag1==1){printf("GE\n");}coluna+=yyleng;}
-">"                 {if(flag1==1){printf("GT\n");}coluna+=yyleng;}
-"{"                 {if(flag1==1){printf("LBRACE\n");}coluna+=yyleng;}
-"<="                {if(flag1==1){printf("LE\n");}coluna+=yyleng;}
-"("                 {if(flag1==1){printf("LPAR\n");}coluna+=yyleng;}
+{RESERVED}			{
+						if(flag1==1){
+							printf("RESERVED(%s)\n", yytext);
+							}
+						coluna+=yyleng;
+					}
+
+"char"              {
+						if(flag1==1){
+							printf("CHAR\n");
+						}
+						coluna+=yyleng;
+					}
+
+"else"              {
+						if(flag1==1){
+							printf("ELSE\n");
+							}
+						coluna+=yyleng;
+					}
+"while"             {
+						if(flag1==1){
+							printf("WHILE\n");
+						}
+						coluna+=yyleng;
+					}
+
+"if"                {
+						if(flag1==1){
+							printf("IF\n");
+						}
+						coluna+=yyleng;
+					}
+					
+"int"               {
+						if(flag1==1){
+							printf("INT\n");
+						}
+						coluna+=yyleng;
+					}
+
+"short"             {
+						if(flag1==1){
+							printf("SHORT\n");
+						}
+						coluna+=yyleng;
+					}
+
+"double"            {
+						if(flag1==1){
+							printf("DOUBLE\n");
+							}
+						coluna+=yyleng;
+					}
+
+"return"            {
+						if(flag1==1){
+							printf("RETURN\n");
+						}
+						coluna+=yyleng;
+					}
+
+"void"              {
+						if(flag1==1){
+							printf("VOID\n");
+						}
+						coluna+=yyleng;
+					}
+
+"&"                 {
+						if(flag1==1){
+							printf("BITWISEAND\n");
+						}
+						coluna+=yyleng;
+					}
+
+"|"                 {
+						if(flag1==1){
+							printf("BITWISEOR\n");
+						}
+						coluna+=yyleng;
+					}
+
+"^"                 {
+						if(flag1==1){
+							printf("BITWISEXOR\n");
+						}
+						coluna+=yyleng;
+					}
+
+"&&"                {
+						if(flag1==1){
+							printf("AND\n");
+						}
+						coluna+=yyleng;
+					}
+
+"="                 {
+						if(flag1==1){
+							printf("ASSIGN\n");
+						}
+					coluna+=yyleng;
+					}
+
+"*"                 {
+						if(flag1==1){
+							printf("MUL\n");
+						}
+						coluna+=yyleng;
+					}
+
+","                 {
+						if(flag1==1){
+							printf("COMMA\n");
+						}
+						coluna+=yyleng;
+					}
+
+"/"                 {
+						if(flag1==1){
+							printf("DIV\n");
+						}
+						coluna+=yyleng;
+					}
+
+"=="                {
+						if(flag1==1){
+							printf("EQ\n");
+						}
+						coluna+=yyleng;
+					}
+
+
+">="                {
+						if(flag1==1){
+							printf("GE\n");
+						}
+						coluna+=yyleng;
+					}
+
+">"                 {
+						if(flag1==1){
+							printf("GT\n");
+						}
+						coluna+=yyleng;	
+					}
+
+"{"                 {
+						if(flag1==1){
+							printf("LBRACE\n");
+						}
+						coluna+=yyleng;
+					}
+
+"<="                {
+						if(flag1==1){
+							printf("LE\n");
+						}
+						coluna+=yyleng;
+					}
+
+"("                 {
+						if(flag1==1){
+							printf("LPAR\n");
+						}
+						coluna+=yyleng;
+					}
+					
 "<"                 {if(flag1==1){printf("LT\n");}coluna+=yyleng;}
 "-"                 {if(flag1==1){printf("MINUS\n");}coluna+=yyleng;}
 "%"                 {if(flag1==1){printf("MOD\n");}coluna+=yyleng;}
