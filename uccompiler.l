@@ -3,10 +3,11 @@
 
 %{
     #include <string.h>
+	#include "y.tab.h"
     int flag1 = 1;
+	int flag2;
     int linha = 1;
     int coluna = 1;
-
     int commentstart_l;
     int commentstart_c;
 %}
@@ -34,7 +35,12 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 						if(flag1==1){
 							printf("RESERVED(%s)\n", yytext);
 							}
-						coluna+=yyleng;
+						coluna+=yyleng;							
+						yylval.str = (char *) strdup(yytext);
+                        if(flag2 == 1){
+							return RESERVED;
+						}
+						
 					}
 
 "char"              {
@@ -42,6 +48,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("CHAR\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return CHAR;
+						}
 					}
 
 "else"              {
@@ -49,12 +58,18 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("ELSE\n");
 							}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return ELSE;
+						}
 					}
 "while"             {
 						if(flag1==1){
 							printf("WHILE\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return WHILE;
+						}
 					}
 
 "if"                {
@@ -62,6 +77,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("IF\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return IF;
+						}
 					}
 					
 "int"               {
@@ -69,6 +87,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("INT\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return INT;
+						}
 					}
 
 "short"             {
@@ -76,6 +97,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("SHORT\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return SHORT;
+						}
 					}
 
 "double"            {
@@ -83,6 +107,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("DOUBLE\n");
 							}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return DOUBLE;
+						}
 					}
 
 "return"            {
@@ -90,6 +117,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("RETURN\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return RETURN;
+						}
 					}
 
 "void"              {
@@ -97,6 +127,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("VOID\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return VOID;
+						}
 					}
 
 "&"                 {
@@ -104,6 +137,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("BITWISEAND\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return BITWISEAND;
+						}
 					}
 
 "|"                 {
@@ -111,6 +147,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("BITWISEOR\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return BITWISEOR;
+						}
 					}
 
 "^"                 {
@@ -118,6 +157,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("BITWISEXOR\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return BITWISEXOR;
+						}
 					}
 
 "&&"                {
@@ -125,13 +167,19 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("AND\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return AND;
+						}
 					}
 
 "="                 {
 						if(flag1==1){
 							printf("ASSIGN\n");
 						}
-					coluna+=yyleng;
+						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return ASSIGN;
+						}
 					}
 
 "*"                 {
@@ -139,6 +187,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("MUL\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return MUL;
+						}
 					}
 
 ","                 {
@@ -146,6 +197,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("COMMA\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return COMMA;
+						}
 					}
 
 "/"                 {
@@ -153,6 +207,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("DIV\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return DIV;
+						}
 					}
 
 "=="                {
@@ -160,6 +217,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("EQ\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return EQ;
+						}
 					}
 
 
@@ -168,6 +228,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("GE\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return GE;
+						}
 					}
 
 ">"                 {
@@ -175,6 +238,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("GT\n");
 						}
 						coluna+=yyleng;	
+                        if(flag2 == 1){
+                            return GT;
+						}
 					}
 
 "{"                 {
@@ -182,6 +248,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("LBRACE\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return LBRACE;
+						}
 					}
 
 "<="                {
@@ -189,6 +258,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("LE\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return LE;
+						}
 					}
 
 "("                 {
@@ -196,6 +268,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("LPAR\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return LPAR;
+						}
 					}
 					
 "<"                 {
@@ -203,6 +278,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("LT\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return LT;
+						}
 					}
 
 "-"                 {
@@ -210,6 +288,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("MINUS\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return MINUS;
+						}
 					}
 
 "%"                 {
@@ -217,6 +298,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("MOD\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return MOD;
+						}
 					}
 
 "!="                {
@@ -224,6 +308,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("NE\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return NE;
+						}
 					}
 
 "!"                 {
@@ -231,6 +318,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("NOT\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return NOT;
+						}
 					}
 
 "||"                {
@@ -238,13 +328,19 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("OR\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return OR;
 						}
+					}
 
 "+"                 {
 						if(flag1==1){
 							printf("PLUS\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return PLUS;
+						}
 					}
 
 "}"                 {
@@ -252,6 +348,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("RBRACE\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return RBRACE;
+						}
 					}
 
 ")"                 {
@@ -259,6 +358,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("RPAR\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return RPAR;
+						}
 					}
 
 ";"                 {
@@ -266,6 +368,9 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("SEMI\n");
 						}
 						coluna+=yyleng;
+                        if(flag2 == 1){
+                            return SEMI;
+						}
 					}
 
 " "|\t|\r|\f		{
@@ -277,6 +382,10 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("INTLIT(%s)\n", yytext);
 						}
 						coluna+=yyleng;
+						yylval.str = (char *) strdup(yytext);
+                        if(flag2 == 1){
+							return INTLIT;
+						}
 					}
 
 {REALLIT}           {
@@ -284,6 +393,10 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("REALLIT(%s)\n", yytext);
 						}
 						coluna+=yyleng;
+						yylval.str = (char *) strdup(yytext);
+                        if(flag2 == 1){
+							return REALLIT;
+						}
 					}
 					
 {ID}                {
@@ -291,6 +404,10 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("ID(%s)\n", yytext);
 						}
 						coluna+=yyleng;
+						yylval.str = (char *) strdup(yytext);
+                        if(flag2 == 1){
+							return ID;
+						}
 					}
 
 {CHRLIT}            {
@@ -298,6 +415,10 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 							printf("CHRLIT(%s)\n", yytext);
 						}
 						coluna+=yyleng;
+						yylval.str = (char *) strdup(yytext);
+                        if(flag2 == 1){
+							return CHRLIT;
+						}
 					}
 
 \'([^\n'\\]|(\\.))*'	{
