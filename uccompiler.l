@@ -198,43 +198,161 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 						coluna+=yyleng;
 					}
 					
-"<"                 {if(flag1==1){printf("LT\n");}coluna+=yyleng;}
-"-"                 {if(flag1==1){printf("MINUS\n");}coluna+=yyleng;}
-"%"                 {if(flag1==1){printf("MOD\n");}coluna+=yyleng;}
-"!="                {if(flag1==1){printf("NE\n");}coluna+=yyleng;}
-"!"                 {if(flag1==1){printf("NOT\n");}coluna+=yyleng;}
-"||"                {if(flag1==1){printf("OR\n");}coluna+=yyleng;}
-"+"                 {if(flag1==1){printf("PLUS\n");}coluna+=yyleng;}
-"}"                 {if(flag1==1){printf("RBRACE\n");}coluna+=yyleng;}
-")"                 {if(flag1==1){printf("RPAR\n");}coluna+=yyleng;}
-";"                 {if(flag1==1){printf("SEMI\n");}coluna+=yyleng;}
+"<"                 {
+						if(flag1==1){
+							printf("LT\n");
+						}
+						coluna+=yyleng;
+					}
 
-" "|\t|\r|\f		{coluna+=yyleng;}
-{INTLIT}            {if(flag1==1){printf("INTLIT(%s)\n", yytext);}coluna+=yyleng;}
-{REALLIT}           {if(flag1==1){printf("REALLIT(%s)\n", yytext);}coluna+=yyleng;}
-{ID}                {if(flag1==1){printf("ID(%s)\n", yytext);}coluna+=yyleng;}
+"-"                 {
+						if(flag1==1){
+							printf("MINUS\n");
+						}
+						coluna+=yyleng;
+					}
 
-{CHRLIT}            {if(flag1==1){printf("CHRLIT(%s)\n", yytext);}coluna+=yyleng;}
+"%"                 {
+						if(flag1==1){
+							printf("MOD\n");
+						}
+						coluna+=yyleng;
+					}
 
-\'([^\n'\\]|(\\.))*'	{printf("Line %d, col %d: invalid char constant (%s)\n", linha, coluna,yytext); coluna+=yyleng;}
-\'([^\n'\\]|(\\.))*\\?	{printf("Line %d, col %d: unterminated char constant\n", linha, coluna); coluna=1;}
+"!="                {
+						if(flag1==1){
+							printf("NE\n");
+						}
+						coluna+=yyleng;
+					}
+
+"!"                 {
+						if(flag1==1){
+							printf("NOT\n");
+						}
+						coluna+=yyleng;
+					}
+
+"||"                {
+						if(flag1==1){
+							printf("OR\n");
+						}
+						coluna+=yyleng;
+						}
+
+"+"                 {
+						if(flag1==1){
+							printf("PLUS\n");
+						}
+						coluna+=yyleng;
+					}
+
+"}"                 {
+						if(flag1==1){
+							printf("RBRACE\n");
+						}
+						coluna+=yyleng;
+					}
+
+")"                 {
+						if(flag1==1){
+							printf("RPAR\n");
+						}
+						coluna+=yyleng;
+					}
+
+";"                 {
+						if(flag1==1){
+							printf("SEMI\n");
+						}
+						coluna+=yyleng;
+					}
+
+" "|\t|\r|\f		{
+						coluna+=yyleng;
+					}
+
+{INTLIT}            {
+						if(flag1==1){
+							printf("INTLIT(%s)\n", yytext);
+						}
+						coluna+=yyleng;
+					}
+
+{REALLIT}           {
+						if(flag1==1){
+							printf("REALLIT(%s)\n", yytext);
+						}
+						coluna+=yyleng;
+					}
+					
+{ID}                {
+						if(flag1==1){
+							printf("ID(%s)\n", yytext);
+						}
+						coluna+=yyleng;
+					}
+
+{CHRLIT}            {
+						if(flag1==1){
+							printf("CHRLIT(%s)\n", yytext);
+						}
+						coluna+=yyleng;
+					}
+
+\'([^\n'\\]|(\\.))*'	{
+							printf("Line %d, col %d: invalid char constant (%s)\n", linha, coluna,yytext); 
+							coluna+=yyleng;
+						}
+
+\'([^\n'\\]|(\\.))*\\?	{
+							printf("Line %d, col %d: unterminated char constant\n", linha, coluna); 
+							coluna=1;
+						}
 
 
-\n|\r\n|\r 					{linha++; coluna=1;;}
-.					{printf("Line %d, col %d: illegal character (%s)\n", linha, coluna, yytext);coluna+=yyleng;}
+\n|\r\n|\r 				{
+							linha++;
+							coluna=1;;
+						}
+
+.					{
+						printf("Line %d, col %d: illegal character (%s)\n", linha, coluna, yytext);
+						coluna+=yyleng;
+					}
+					
 
 
 
 
 "//"				{BEGIN SINGLECOMMENT;}
-<SINGLECOMMENT>\n	{linha++; coluna = 1; BEGIN 0;}
+<SINGLECOMMENT>\n	{
+						linha++; 
+						coluna = 1; 
+						BEGIN 0;
+					}
+
 <SINGLECOMMENT>.	{;}
 
 
-"/*"					{BEGIN MULTICOMMENT; commentstart_l = linha;commentstart_c = coluna; coluna +=yyleng;}
-<MULTICOMMENT>\n		{linha++;coluna = 1;}
-<MULTICOMMENT><<EOF>>	{printf("Line %d, col %d: unterminated comment\n", commentstart_l, commentstart_c);return 0;}
+"/*"					{BEGIN MULTICOMMENT; 
+						commentstart_l = linha;
+						commentstart_c = coluna; 
+						coluna +=yyleng;
+						}
+
+<MULTICOMMENT>\n		{
+							linha++;
+							coluna = 1;
+						}
+
+<MULTICOMMENT><<EOF>>	{
+							printf("Line %d, col %d: unterminated comment\n", commentstart_l, commentstart_c);
+							return 0;
+						}
+
 <MULTICOMMENT>.			{coluna+=yyleng;}
+
 <MULTICOMMENT>"*/"		{coluna+=yyleng;BEGIN 0;}
 
 
