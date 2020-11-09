@@ -34,7 +34,8 @@
 %right NOT
 
 %nonassoc IF
-%right THEN ELSE
+%nonassoc THEN
+%nonassoc ELSE
 
 %union{
     char *str;
@@ -184,9 +185,7 @@ Expr:                           Expr ASSIGN Expr                                
                 |               NOT Expr                                            {}
 
 
-                |               ID LPAR RPAR                               {}
-
-                |               ID LPAR Expr ExprOp4 RPAR                       {}
+                |               ID LPAR ExprOp4 RPAR                       {}
 
 
                 |               ID                                              {}
@@ -202,11 +201,9 @@ Expr:                           Expr ASSIGN Expr                                
     ;  
 
 
-
-
-                
     
 ExprOp4:                        ExprOp4 COMMA Expr                            	{}
+                |               Expr  %prec THEN            
                 |                                                               {}
     ;
 
