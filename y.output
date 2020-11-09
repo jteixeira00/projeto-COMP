@@ -3,8 +3,7 @@ Terminals unused in grammar
     RESERVED
 
 
-State 121 conflicts: 1 reduce/reduce
-State 124 conflicts: 1 shift/reduce
+State 91 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -95,7 +94,7 @@ Grammar
    66     | REALLIT
    67     | LPAR Expr RPAR
 
-   68 ExprOp4: COMMA Expr ExprOp4
+   68 ExprOp4: ExprOp4 COMMA Expr
    69        | %empty
 
 
@@ -141,64 +140,65 @@ Terminals, with rules where they appear
     ID <str> (293) 14 19 28 29 61 62 63
     REALLIT <str> (294) 66
     INTLIT <str> (295) 64
+    THEN (296)
 
 
 Nonterminals, with rules where they appear
 
-    $accept (41)
+    $accept (42)
         on left: 0
-    FunctionsAndDeclarations (42)
+    FunctionsAndDeclarations (43)
         on left: 1 2 3 4
         on right: 0 1 2 3
-    FunctionDefinition (43)
+    FunctionDefinition (44)
         on left: 5
         on right: 1
-    FunctionBody (44)
+    FunctionBody (45)
         on left: 6
         on right: 5
-    DeclarationsAndStatementsOp (45)
+    DeclarationsAndStatementsOp (46)
         on left: 7 8
         on right: 6
-    DeclarationsAndStatements (46)
+    DeclarationsAndStatements (47)
         on left: 9 10 11 12
         on right: 7 9 10
-    FunctionDeclaration (47)
+    FunctionDeclaration (48)
         on left: 13
         on right: 2
-    FunctionDeclarator (48)
+    FunctionDeclarator (49)
         on left: 14
         on right: 5 13
-    ParameterList (49)
+    ParameterList (50)
         on left: 15
         on right: 14
-    ParameterListOp (50)
+    ParameterListOp (51)
         on left: 16 17
         on right: 15 16
-    ParameterDeclaration (51)
+    ParameterDeclaration (52)
         on left: 18 19
         on right: 15 16
-    Declaration (52)
+    Declaration (53)
         on left: 20
         on right: 3 10 12
-    DeclarationOp (53)
+    DeclarationOp (54)
         on left: 21 22
         on right: 20 21
-    TypeSpec (54)
+    TypeSpec (55)
         on left: 23 24 25 26 27
         on right: 5 13 18 19 20
-    Declarator (55)
+    Declarator (56)
         on left: 28 29
         on right: 20 21
-    Statement (56)
+    Statement (57)
         on left: 30 31 32 33 34 35 36 37
         on right: 9 11 33 34 35 38
-    StatementOp (57)
+    StatementOp (58)
         on left: 38 39
         on right: 32 38
-    Expr (58)
+    Expr (59)
         on left: 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67
         on right: 29 31 33 34 35 37 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 62 67 68
-    ExprOp4 (59)
+    ExprOp4 (60)
         on left: 68 69
         on right: 62 68
 
@@ -1540,7 +1540,7 @@ State 91
     AND         shift, and go to state 59
     ASSIGN      shift, and go to state 60
     MUL         shift, and go to state 61
-    COMMA       shift, and go to state 116
+    COMMA       shift, and go to state 62
     DIV         shift, and go to state 63
     EQ          shift, and go to state 64
     GE          shift, and go to state 65
@@ -1553,9 +1553,10 @@ State 91
     OR          shift, and go to state 72
     PLUS        shift, and go to state 73
 
+    COMMA     [reduce using rule 69 (ExprOp4)]
     $default  reduce using rule 69 (ExprOp4)
 
-    ExprOp4  go to state 117
+    ExprOp4  go to state 116
 
 
 State 92
@@ -2174,7 +2175,7 @@ State 110
 
     $default  reduce using rule 17 (ParameterListOp)
 
-    ParameterListOp  go to state 118
+    ParameterListOp  go to state 117
 
 
 State 111
@@ -2217,7 +2218,7 @@ State 111
     NE          shift, and go to state 71
     OR          shift, and go to state 72
     PLUS        shift, and go to state 73
-    RPAR        shift, and go to state 119
+    RPAR        shift, and go to state 118
 
 
 State 112
@@ -2261,7 +2262,7 @@ State 112
     NE          shift, and go to state 71
     OR          shift, and go to state 72
     PLUS        shift, and go to state 73
-    RPAR        shift, and go to state 120
+    RPAR        shift, and go to state 119
 
 
 State 113
@@ -2287,38 +2288,46 @@ State 115
 
 State 116
 
-   41 Expr: Expr COMMA . Expr
-   68 ExprOp4: COMMA . Expr ExprOp4
+   62 Expr: ID LPAR Expr ExprOp4 . RPAR
+   68 ExprOp4: ExprOp4 . COMMA Expr
 
-    LPAR     shift, and go to state 25
-    MINUS    shift, and go to state 26
-    NOT      shift, and go to state 27
-    PLUS     shift, and go to state 28
-    CHRLIT   shift, and go to state 29
-    ID       shift, and go to state 30
-    REALLIT  shift, and go to state 31
-    INTLIT   shift, and go to state 32
-
-    Expr  go to state 121
+    COMMA  shift, and go to state 120
+    RPAR   shift, and go to state 121
 
 
 State 117
-
-   62 Expr: ID LPAR Expr ExprOp4 . RPAR
-
-    RPAR  shift, and go to state 122
-
-
-State 118
 
    16 ParameterListOp: COMMA ParameterDeclaration ParameterListOp .
 
     $default  reduce using rule 16 (ParameterListOp)
 
 
-State 119
+State 118
 
    35 Statement: WHILE LPAR Expr RPAR . Statement
+
+    WHILE    shift, and go to state 37
+    IF       shift, and go to state 38
+    RETURN   shift, and go to state 39
+    LBRACE   shift, and go to state 40
+    LPAR     shift, and go to state 25
+    MINUS    shift, and go to state 26
+    NOT      shift, and go to state 27
+    PLUS     shift, and go to state 28
+    SEMI     shift, and go to state 41
+    CHRLIT   shift, and go to state 29
+    ID       shift, and go to state 30
+    REALLIT  shift, and go to state 31
+    INTLIT   shift, and go to state 32
+
+    Statement  go to state 122
+    Expr       go to state 47
+
+
+State 119
+
+   33 Statement: IF LPAR Expr RPAR . Statement
+   34          | IF LPAR Expr RPAR . Statement ELSE Statement
 
     WHILE    shift, and go to state 37
     IF       shift, and go to state 38
@@ -2340,32 +2349,48 @@ State 119
 
 State 120
 
-   33 Statement: IF LPAR Expr RPAR . Statement
-   34          | IF LPAR Expr RPAR . Statement ELSE Statement
+   68 ExprOp4: ExprOp4 COMMA . Expr
 
-    WHILE    shift, and go to state 37
-    IF       shift, and go to state 38
-    RETURN   shift, and go to state 39
-    LBRACE   shift, and go to state 40
     LPAR     shift, and go to state 25
     MINUS    shift, and go to state 26
     NOT      shift, and go to state 27
     PLUS     shift, and go to state 28
-    SEMI     shift, and go to state 41
     CHRLIT   shift, and go to state 29
     ID       shift, and go to state 30
     REALLIT  shift, and go to state 31
     INTLIT   shift, and go to state 32
 
-    Statement  go to state 124
-    Expr       go to state 47
+    Expr  go to state 124
 
 
 State 121
 
+   62 Expr: ID LPAR Expr ExprOp4 RPAR .
+
+    $default  reduce using rule 62 (Expr)
+
+
+State 122
+
+   35 Statement: WHILE LPAR Expr RPAR Statement .
+
+    $default  reduce using rule 35 (Statement)
+
+
+State 123
+
+   33 Statement: IF LPAR Expr RPAR Statement .
+   34          | IF LPAR Expr RPAR Statement . ELSE Statement
+
+    ELSE  shift, and go to state 125
+
+    $default  reduce using rule 33 (Statement)
+
+
+State 124
+
    40 Expr: Expr . ASSIGN Expr
    41     | Expr . COMMA Expr
-   41     | Expr COMMA Expr .
    42     | Expr . PLUS Expr
    43     | Expr . MINUS Expr
    44     | Expr . MUL Expr
@@ -2382,7 +2407,7 @@ State 121
    55     | Expr . GE Expr
    56     | Expr . LT Expr
    57     | Expr . GT Expr
-   68 ExprOp4: COMMA Expr . ExprOp4
+   68 ExprOp4: ExprOp4 COMMA Expr .
 
     BITWISEAND  shift, and go to state 56
     BITWISEOR   shift, and go to state 57
@@ -2402,46 +2427,10 @@ State 121
     OR          shift, and go to state 72
     PLUS        shift, and go to state 73
 
-    RPAR      reduce using rule 41 (Expr)
-    RPAR      [reduce using rule 69 (ExprOp4)]
-    $default  reduce using rule 41 (Expr)
-
-    ExprOp4  go to state 125
-
-
-State 122
-
-   62 Expr: ID LPAR Expr ExprOp4 RPAR .
-
-    $default  reduce using rule 62 (Expr)
-
-
-State 123
-
-   35 Statement: WHILE LPAR Expr RPAR Statement .
-
-    $default  reduce using rule 35 (Statement)
-
-
-State 124
-
-   33 Statement: IF LPAR Expr RPAR Statement .
-   34          | IF LPAR Expr RPAR Statement . ELSE Statement
-
-    ELSE  shift, and go to state 126
-
-    ELSE      [reduce using rule 33 (Statement)]
-    $default  reduce using rule 33 (Statement)
-
-
-State 125
-
-   68 ExprOp4: COMMA Expr ExprOp4 .
-
     $default  reduce using rule 68 (ExprOp4)
 
 
-State 126
+State 125
 
    34 Statement: IF LPAR Expr RPAR Statement ELSE . Statement
 
@@ -2459,11 +2448,11 @@ State 126
     REALLIT  shift, and go to state 31
     INTLIT   shift, and go to state 32
 
-    Statement  go to state 127
+    Statement  go to state 126
     Expr       go to state 47
 
 
-State 127
+State 126
 
    34 Statement: IF LPAR Expr RPAR Statement ELSE Statement .
 

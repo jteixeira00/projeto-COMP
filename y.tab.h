@@ -86,7 +86,8 @@ extern int yydebug;
     CHRLIT = 292,
     ID = 293,
     REALLIT = 294,
-    INTLIT = 295
+    INTLIT = 295,
+    THEN = 296
   };
 #endif
 /* Tokens.  */
@@ -128,16 +129,17 @@ extern int yydebug;
 #define ID 293
 #define REALLIT 294
 #define INTLIT 295
+#define THEN 296
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 40 "uccompiler.y"
+#line 39 "uccompiler.y"
 
     char *str;
 
-#line 141 "y.tab.h"
+#line 143 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

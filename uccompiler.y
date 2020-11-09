@@ -34,8 +34,7 @@
 %right NOT
 
 %nonassoc IF
-%nonassoc ELSE
-
+%right THEN ELSE
 
 %union{
     char *str;
@@ -131,7 +130,7 @@ Statement:                      SEMI                                            
                 |               LBRACE StatementOp RBRACE                       {}
 
 
-                |               IF LPAR Expr RPAR Statement                     {}
+                |               IF LPAR Expr RPAR Statement     %prec THEN      {} 
 
                 |               IF LPAR Expr RPAR Statement ELSE Statement      {}
 
@@ -185,7 +184,7 @@ Expr:                           Expr ASSIGN Expr                                
                 |               NOT Expr                                            {}
 
 
-                |               ID LPAR RPAR                                    {}
+                |               ID LPAR RPAR                               {}
 
                 |               ID LPAR Expr ExprOp4 RPAR                       {}
 
@@ -207,7 +206,7 @@ Expr:                           Expr ASSIGN Expr                                
 
                 
     
-ExprOp4:                        COMMA Expr ExprOp4                            {}
+ExprOp4:                        ExprOp4 COMMA Expr                            	{}
                 |                                                               {}
     ;
 
