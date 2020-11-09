@@ -14,7 +14,7 @@
 
 
 %token CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR 
-%token AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE
+%token <str> AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE
 %token RPAR SEMI 
 
 %token <str> RESERVED CHRLIT ID REALLIT INTLIT
@@ -157,13 +157,25 @@ Expr:                           Expr ASSIGN Expr                                
                 |               Expr COMMA Expr                                 {}
 
 
-                |               Expr ExprOp1 Expr                                {}
-    
+                |               Expr PLUS Expr                                {}
+                |               Expr MINUS Expr                                {}
+                |               Expr MUL Expr                                {}
+                |               Expr DIV Expr                                {}
+                |               Expr MOD Expr                                {}
+            
 
-                |               Expr ExprOp2 Expr                               {}
+                |               Expr OR Expr                               {}
+                |               Expr AND Expr                               {}
+                |               Expr BITWISEAND Expr                               {}
+                |               Expr BITWISEOR Expr                               {}
+                |               Expr BITWISEXOR Expr                               {}
 
-
-                |               Expr ExprOp3 Expr                                {}
+                |               Expr EQ Expr                                {}
+                |               Expr NE Expr                                {}
+                |               Expr LE Expr                                {}
+                |               Expr GE Expr                                {}
+                |               Expr LT Expr                                {}
+                |               Expr GT Expr                                {}
 
                 
                 |               PLUS Expr                                            {}
@@ -192,32 +204,6 @@ Expr:                           Expr ASSIGN Expr                                
 
 
 
-
-ExprOp1:                        PLUS                                            {}
-                |               MINUS                                            {}
-                |               MUL                                            {}
-                |               DIV                                            {}
-                |               MOD                                            {}
-    ;
-    
-
-
-ExprOp2:                        OR                                            {}
-                |               AND                                            {}
-                |               BITWISEAND                                            {}
-                |               BITWISEOR                                            {}
-                |               BITWISEXOR                                            {}
-    ;
-
-
-    
-ExprOp3:                        EQ                                            {}
-                |               NE                                            {}
-                |               LE                                            {}
-                |               GE                                            {}
-                |               LT                                            {}
-                |               GT                                            {}
-    ;
 
                 
     
