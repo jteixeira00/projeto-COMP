@@ -135,11 +135,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 40 "uccompiler.y"
+#line 63 "uccompiler.y"
 
     char *str;
+    struct node *node;
 
-#line 143 "y.tab.h"
+#line 144 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
