@@ -111,47 +111,96 @@ FunctionDeclaration:            TypeSpec FunctionDeclarator SEMI            {}
 FunctionDeclarator:             ID LPAR ParameterList RPAR                  {}
     ;
 
-ParameterList:                  ParameterDeclaration ParameterListOp        {}
+ParameterList:                  ParameterDeclaration ParameterListOp        {struct node *paramlist = createnode("ParamList");
+                                                                            addchild(paramlist, $1);
+                                                                            if($3!=NULL){
+                                                                                addchild(paramlist, $2);
+                                                                                addbro($1, $3);}
+                                                                            $$=paramlist;
+                                                                            }
     ;
 
-ParameterListOp:                COMMA ParameterDeclaration ParameterListOp  {}
-                |                                                           {}
+ParameterListOp:                COMMA ParameterDeclaration ParameterListOp  {struct node *comma = createnode("Comma", "");
+                                                                            addchild(comma, $2);
+                                                                            if($3==NULL){
+                                                                                struct node *null = createnode("Null", "");
+                                                                                addchild(comma, null)
+                                                                                addbro($2,null);
+                                                                                }
+                                                                            else{
+                                                                                addchild(comma, $3);
+                                                                                addbro($2,$3);}
+                                                                            $$ = comma;
+                                                                            }
+                |                                                           {$$ = NULL}
 
     ;
 
-ParameterDeclaration:           TypeSpec                                    {}
+ParameterDeclaration:           TypeSpec                                    {struct node *paramdeclaration = createnode("ParameterDeclaration", "");
+                                                                            addchild(paramdeclaration, $1);
+                                                                            $$ = paramdeclaration;
+                                                                            }
 
-                |               TypeSpec ID                                 {}
+                |               TypeSpec ID                                 {struct node *paramdeclaration = createnode("ParameterDeclaration", "");
+                                                                            addchild(paramdeclaration, $1);
+                                                                            struct node *id1 = createnode("Id", "");
+                                                                            addchild(paramdeclaration, id1);
+                                                                            addbro($1, id1);
+                                                                            
+                                                                            $$ = paramdeclaration;}
 
 
     ;
 
-Declaration:                    TypeSpec Declarator DeclarationOp SEMI      {}
+Declaration:                    TypeSpec Declarator DeclarationOp SEMI      {struct node *declaration = createnode("Declaration",""):
+                                                                            addchild(declaration, $1);
+                                                                            addchild(declaration, $2);
+                                                                            addbro($1, $2);
+                                                                            if($3!=NULL){
+                                                                                addchild(declaration, $3);
+                                                                                addbro($2, $3);}
+                                                                            $$ = declaration;
+                                                                            } 
+    
+    ;
+
+DeclarationOp:                  COMMA Declarator DeclarationOp              {struct node *comma = createnode("Comma", "");
+                                                                            addchild(comma, $2);
+                                                                            if($3==NULL){
+                                                                                struct node *null = createnode("Null", "");
+                                                                                addchild(comma, null)
+                                                                                addbro($2,null);
+                                                                                }
+                                                                            else{
+                                                                                addchild(comma, $3);
+                                                                                addbro($2,$3);}
+                                                                            $$ = comma;
+                                                                            }
+                |                                                           {$$ = NULL}
 
     ;
 
-DeclarationOp:                  COMMA Declarator DeclarationOp                           {}
-                |                                                           {}
+TypeSpec:                       CHAR                                        {$$ = createnode("Char","");}
 
-    ;
+                |               INT                                         {$$ = createnode("Int","");}
 
-TypeSpec:                       CHAR                                        {}
+                |               VOID                                        {$$ = createnode("Void","");}
 
-                |               INT                                         {struct node *typeInt = createnode("Int","");
-                                                                            $$ = typeInt;}
-
-                |               VOID                                        {}
-
-                |               SHORT                                       {}
+                |               SHORT                                       {$$ = createnode("Short","");}
                 
-                |               DOUBLE                                      {}
+                |               DOUBLE                                      {$$ = createnode("Double","");}
 
     ;                        
 
 
-Declarator:                     ID                                          {}
+Declarator:                     ID                                          {$$ = createnode("Id", "");}
 
-                |               ID ASSIGN Expr                              {}
+                |               ID ASSIGN Expr                              {struct node *store = createnode("Store","");
+                                                                                struct node *id1 = createnode("Id", "");
+                                                                                 addchild(store, id1);
+                                                                                 addchild(store, $3);
+                                                                                 addbro(id1, $3);
+                                                                                 $$ = store;}
 
     ;
 
@@ -178,8 +227,7 @@ Statement:                      SEMI                                            
                                                                                 addchild(if1, null);
                                                                                 addbro($3, $5);
                                                                                 addbro($5, null);
-                                                                                $$ = if1;
-                                                                                } 
+                                                                                $$ = if1;} 
 
 
                 |               IF LPAR Expr RPAR Statement ELSE Statement      {struct node *if2 = createnode("If", "");
@@ -188,31 +236,38 @@ Statement:                      SEMI                                            
                                                                                 addchild(if2, $7);
                                                                                 addbro($3, $5);
                                                                                 addbro($5, $7);
-                                                                                $$ = if2;
-                                                                                }
+                                                                                $$ = if2;}
 
 
                 |               WHILE LPAR Expr RPAR Statement                  {struct node *while1 = createnode("While", "");
                                                                                 addchild(while1, $3);
                                                                                 addchild(while1, $5);
                                                                                 addbro($3, $5);
-                                                                                $$ = while1;
-                                                                                }
+                                                                                $$ = while1;}
 
 
                 |               RETURN SEMI                                     {struct node *return1 = createnode("Return", "");
                                                                                 struct node *null = createnode("Null","");
                                                                                 addchild(return1, null);
-                                                                                $$=return1;
-                                                                                }
+                                                                                $$=return1;}
 
-                |               RETURN Expr SEMI                                {}
+                |               RETURN Expr SEMI                                {struct node *return1 = createnode("Return", "");                                                                                
+                                                                                addchild(return1, $2);
+                                                                                $$=return1;}
 
     ;
 
 
 
-StatementOp:                  Statement StatementOp                             {}
+StatementOp:                  Statement StatementOp                             {if($1 == NULL && $2 == NULL){
+                                                                                    $$ = NULL;}
+                                                                                    else if ($1 == NULL){
+                                                                                        $$ = $2;}
+                                                                                    else if ($2 == NULL){
+                                                                                        $$ = $1;}
+                                                                                    else{
+                                                                                        $$ = addbro($1, $2);}
+                                                                                }
                 |                                                               {$$ = NULL;}
                 
     ;                 
