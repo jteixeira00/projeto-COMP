@@ -4,7 +4,7 @@
 %{
     #include <string.h>
 	#include "y.tab.h"
-    int flag1 = 1;
+    int flag1 = 0;
 	int flag2 = 1;
     int linha = 1;
     int coluna = 1;

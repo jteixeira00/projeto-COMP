@@ -4,6 +4,7 @@
     #include <string.h>
     #include <unistd.h>
     #include "y.tab.h"
+    int type;
     #define MAX 512
     int yylex(void);
     int yylex_destroy();
@@ -140,7 +141,7 @@ FunctionDeclaration:            TypeSpec FunctionDeclarator SEMI            {str
 
     ;
 
-FunctionDeclarator:             ID LPAR ParameterList RPAR                  {struct node *id1 = createnode("Id","");
+FunctionDeclarator:             ID LPAR ParameterList RPAR                  {struct node *id1 = createnode("Id",$1);
                                                                             addbro(id1, $3);
                                                                             $$ = id1;
                                                                             }
@@ -155,30 +156,24 @@ ParameterList:                  ParameterDeclaration ParameterListOp        {str
                                                                             }
     ;
 
-ParameterListOp:                COMMA ParameterDeclaration ParameterListOp  {struct node *comma = createnode("Comma", "");
-                                                                            addchild(comma, $2);
-                                                                            if($3==NULL){
-                                                                                struct node *null = createnode("Null", "");
-                                                                                addchild(comma, null);
-                                                                                addbro($2,null);
+ParameterListOp:                COMMA ParameterDeclaration ParameterListOp  {
+                                                                            if($3!=NULL){
+                                                                                addbro($2,$3);
                                                                                 }
-                                                                            else{
-                                                                                addchild(comma, $3);
-                                                                                addbro($2,$3);}
-                                                                            $$ = comma;
+                                                                            $$ = $2;
                                                                             }
                 |                                                           {$$ = NULL;}
 
     ;
 
-ParameterDeclaration:           TypeSpec                                    {struct node *paramdeclaration = createnode("ParameterDeclaration", "");
+ParameterDeclaration:           TypeSpec                                    {struct node *paramdeclaration = createnode("ParamDeclaration", "");
                                                                             addchild(paramdeclaration, $1);
                                                                             $$ = paramdeclaration;
                                                                             }
 
-                |               TypeSpec ID                                 {struct node *paramdeclaration = createnode("ParameterDeclaration", "");
+                |               TypeSpec ID                                 {struct node *paramdeclaration = createnode("ParamDeclaration", "");
                                                                             addchild(paramdeclaration, $1);
-                                                                            struct node *id1 = createnode("Id", "");
+                                                                            struct node *id1 = createnode("Id", $2);
                                                                             addchild(paramdeclaration, id1);
                                                                             addbro($1, id1);
                                                                             
@@ -187,55 +182,72 @@ ParameterDeclaration:           TypeSpec                                    {str
 
     ;
 
-Declaration:                    TypeSpec Declarator DeclarationOp SEMI      {struct node *declaration = createnode("Declaration","");
+Declaration:                    TypeSpec Declarator DeclarationOp SEMI      {struct node *declaration = createnode("Declaration","");                                                                            
                                                                             addchild(declaration, $1);
                                                                             addchild(declaration, $2);
                                                                             addbro($1, $2);
                                                                             if($3!=NULL){
-                                                                                addchild(declaration, $3);
-                                                                                addbro($2, $3);}
+                                                                                addbro(declaration,  $3);
+                                                                                }
+
                                                                             $$ = declaration;
                                                                             } 
     
     ;
 
-DeclarationOp:                  COMMA Declarator DeclarationOp              {struct node *comma = createnode("Comma", "");
-                                                                            addchild(comma, $2);
-                                                                            if($3==NULL){
-                                                                                struct node *null = createnode("Null", "");
-                                                                                addchild(comma, null);
-                                                                                addbro($2,null);
+DeclarationOp:                  COMMA Declarator DeclarationOp              {struct node *declaration = createnode("Declaration", "");
+
+                                                                            if(type == 0){
+                                                                                addchild(declaration,createnode("Char",""));                                                                                
+                                                                            }
+                                                                            if(type == 1){
+                                                                                addchild(declaration,createnode("Int",""));
+                                                                            }
+                                                                            if(type == 2){
+                                                                                addchild(declaration,createnode("Void",""));
+                                                                            }
+                                                                            if(type == 3){
+                                                                                addchild(declaration,createnode("Short",""));
+                                                                            }
+                                                                            if(type == 4){
+                                                                                addchild(declaration,createnode("Double",""));
+                                                                            }
+                                                                            addchild(declaration, $2);
+                                                                            addbro(declaration->childs[0], $2);                                                                            
+                                                                            
+
+                                                                            if($3!=NULL){                                                                    
+                                                                                addbro(declaration,$3);
                                                                                 }
-                                                                            else{
-                                                                                addchild(comma, $3);
-                                                                                addbro($2,$3);}
-                                                                            $$ = comma;
+                                                                            $$ = declaration;
                                                                             }
                 |                                                           {$$ = NULL;}
 
     ;
 
-TypeSpec:                       CHAR                                        {$$ = createnode("Char","");}
+TypeSpec:                       CHAR                                        {$$ = createnode("Char","");
+                                                                            type = 0;}
 
-                |               INT                                         {$$ = createnode("Int","");}
+                |               INT                                         {$$ = createnode("Int","");
+                                                                            type = 1;}
 
-                |               VOID                                        {$$ = createnode("Void","");}
+                |               VOID                                        {$$ = createnode("Void","");
+                                                                            type = 2;}
 
-                |               SHORT                                       {$$ = createnode("Short","");}
+                |               SHORT                                       {$$ = createnode("Short","");
+                                                                            type = 3;}
                 
-                |               DOUBLE                                      {$$ = createnode("Double","");}
+                |               DOUBLE                                      {$$ = createnode("Double","");
+                                                                            type = 4;}
 
     ;                        
 
 
-Declarator:                     ID                                          {$$ = createnode("Id", "");}
+Declarator:                     ID                                          {$$ = createnode("Id", $1);}
 
-                |               ID ASSIGN Expr                              {struct node *store = createnode("Store","");
-                                                                                struct node *id1 = createnode("Id", "");
-                                                                                 addchild(store, id1);
-                                                                                 addchild(store, $3);
+                |               ID ASSIGN Expr                              {struct node *id1 = createnode("Id", $1);
                                                                                  addbro(id1, $3);
-                                                                                 $$ = store;}
+                                                                                 $$ = id1;}
 
     ;
 
@@ -426,7 +438,7 @@ Expr:                           Expr ASSIGN Expr                                
                                                                                     $$ = addchild(not,$2);}
 
 
-                |               ID LPAR ExprOp4 RPAR                            {struct node *id1 = createnode("Id","");
+                |               ID LPAR ExprOp4 RPAR                            {struct node *id1 = createnode("Id",$1);
                                                                                 struct node *call = createnode("Call","");
                                                                                 addchild(call, id1);
                                                                                 addchild(call, $3);
@@ -434,13 +446,13 @@ Expr:                           Expr ASSIGN Expr                                
                                                                                 $$ = call;}
                                 
 
-                |               ID                                              {$$ = createnode("Id", "");}
+                |               ID                                              {$$ = createnode("Id", $1);}
 
-                |               INTLIT                                          {$$ = createnode("IntLit", "");}
+                |               INTLIT                                          {$$ = createnode("IntLit", $1);}
 
-                |               CHRLIT                                          {$$ = createnode("ChrLit", "");}
+                |               CHRLIT                                          {$$ = createnode("ChrLit", $1);}
 
-                |               REALLIT                                         {$$ = createnode("RealLit", "");}
+                |               REALLIT                                         {$$ = createnode("RealLit", $1);}
                 
                 |               LPAR Expr RPAR                                  {$$ = $2;}  
     ;
@@ -457,9 +469,7 @@ ExprOp4:                        ExprOp4 COMMA Expr                            	{
     ;
 
 
-
 %%
-
 struct node* createnode(char *type, char *value){
     node *new = (node *)malloc(sizeof(node));
 
@@ -508,7 +518,6 @@ struct node *addbro(struct node* n1, struct node* n2){
 
 void print_tree(struct node *head, int depth){
     if (head == NULL){
-        printf("autoreturn\n");
         return;
     }
 
