@@ -687,9 +687,9 @@ char *yytext;
 #line 5 "uccompiler.l"
     #include <string.h>
 	#include "y.tab.h"
-    int flag1 = 0;
-	int flag2 = 1;
-    int linha = 1;
+    int flag1;
+	int flag2;
+    int linha;
     int coluna = 1;
     int commentstart_l;
     int commentstart_c;

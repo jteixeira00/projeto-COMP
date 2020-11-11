@@ -5,6 +5,11 @@
     #include <unistd.h>
     #include "y.tab.h"
     int type;
+
+    int  flag1 = 0;
+	int  flag2 = 1;
+    int  linha = 1;
+
     #define MAX 512
     int yylex(void);
     int yylex_destroy();
@@ -538,9 +543,24 @@ void print_tree(struct node *head, int depth){
     free(head);
 }
 
-int main(int argc, char *argv[]){
-    yyparse();
-    print_tree(head, 0);
+int main(int argc, char **argv){
+    if (argc > 1){
+        if (strcmp(argv[1], "-l") == 0){
+            //imprime so os tokens da primeira; so analise lexical
+            flag1 = 1;
+            flag2 = 1;
+            yylex();
+        }
+
+        else if (strcmp(argv[1], "-t") == 0){
+            // IMPRIMIR ARVORE, ja temos de dar os returns;
+            flag1 = 1;
+            yyparse();
+            print_tree(head, 0);
+        }
+
+    return 0;
+	}
 }
 
 
