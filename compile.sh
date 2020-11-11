@@ -1,5 +1,3 @@
-#!/bin/sh
-
-flex $1.l
-yacc -d --verbose $1.y
-clang -o $1 y.tab.c lex.yy.c 
+sudo lex uccompiler.l 
+sudo yacc -d --verbose uccompiler.y 
+sudo cc -o uccompiler y.tab.c lex.yy.c 

@@ -509,7 +509,9 @@ struct node *addbro(struct node* n1, struct node* n2){
 }
 
 void print_tree(struct node *head, int depth){
+    printf("aqui\n");
     if (head == NULL){
+        printf("autoreturn\n");
         return;
     }
 
@@ -531,7 +533,14 @@ void print_tree(struct node *head, int depth){
     free(head);
 }
 
+int main(int argc, char *argv[]){
+    printf("here\n");
+    yyparse();
+    printf("here2\n");
+    print_tree(head, 0);
 
+
+}
 
 void yyerror(char *msg) {
     printf("%s", msg);

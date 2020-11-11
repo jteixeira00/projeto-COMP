@@ -480,7 +480,7 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 
 
 %%
-
+/*
 int main(int argc, char *argv[]){
 	if (argc > 1){
 		if (strcmp(argv[1], "-l")==0){
@@ -502,12 +502,9 @@ int main(int argc, char *argv[]){
 	}
 
     yylex();
-	yyparse();
-	print_tree(head, 0);
-
     return 0;
 }
-
+*/
 int yywrap(){
     return 1;
 }
