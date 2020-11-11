@@ -75,9 +75,9 @@
     #include "y.tab.h"
     int type;
 
-    int  flag1 = 0;
-	int  flag2 = 1;
-    int  linha = 1;
+    int flag1 = 0; 	//tokens encontrados
+	int flag2 = 0; 	//return
+	int lex_erros = 0;
 
     #define MAX 512
     int yylex(void);
@@ -2510,22 +2510,38 @@ void print_tree(struct node *head, int depth){
 int main(int argc, char **argv){
     if (argc > 1){
         if (strcmp(argv[1], "-l") == 0){
-            //imprime so os tokens da primeira; so analise lexical
+            //tokens e erros do lex
             flag1 = 1;
-            flag2 = 0;
+            yylex();
+        }
+
+        else if (strcmp(argv[1], "-e1") == 0){
+            // erros lex;
             yylex();
         }
 
         else if (strcmp(argv[1], "-t") == 0){
-            // IMPRIMIR ARVORE, ja temos de dar os returns;
-            flag1 = 0;
+            // arvore, return no lex
             flag2 = 1;
             yyparse();
             print_tree(head, 0);
         }
 
-    return 0;
+        else if (strcmp(argv[1], "-e2") == 0){
+            // erros lex;
+            flag2 = 1;
+            yyparse();
+        }
+
+        else{
+        	return 0;
+        }
 	}
+	if (argc == 1){
+		yylex();
+	}
+
+	return 0;
 }
 
 

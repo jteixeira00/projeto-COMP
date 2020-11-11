@@ -4,9 +4,9 @@
 %{
     #include <string.h>
 	#include "y.tab.h"
-    int flag1;
-	int flag2;
-    int linha;
+    int flag1;	//tokens encontrados
+	int flag2; //returns
+    int linha = 1;
     int coluna = 1;
     int commentstart_l;
     int commentstart_c;
@@ -480,31 +480,6 @@ RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Co
 
 
 %%
-/*
-int main(int argc, char *argv[]){
-	if (argc > 1){
-		if (strcmp(argv[1], "-l")==0){
-			flag1 = 1;
-		}
-		else if (strcmp(argv[1], "-e1")==0){
-			flag1 = 0;
-
-		}
-		else{
-			return 0;
-		}
-
-
-	}
-	if (argc==1){
-		flag1 = 0;
-
-	}
-
-    yylex();
-    return 0;
-}
-*/
 int yywrap(){
     return 1;
 }
