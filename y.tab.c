@@ -2512,13 +2512,14 @@ int main(int argc, char **argv){
         if (strcmp(argv[1], "-l") == 0){
             //imprime so os tokens da primeira; so analise lexical
             flag1 = 1;
-            flag2 = 1;
+            flag2 = 0;
             yylex();
         }
 
         else if (strcmp(argv[1], "-t") == 0){
             // IMPRIMIR ARVORE, ja temos de dar os returns;
-            flag1 = 1;
+            flag1 = 0;
+            flag2 = 1;
             yyparse();
             print_tree(head, 0);
         }
