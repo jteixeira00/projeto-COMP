@@ -5,7 +5,7 @@
     #include <string.h>
 	#include "y.tab.h"
     int flag1 = 1;
-	int flag2;
+	int flag2 = 1;
     int linha = 1;
     int coluna = 1;
     int commentstart_l;
@@ -27,7 +27,6 @@ INTLIT      {numero}+
 CHRLIT      \'[^\n\\']\'|\'(\\n)\'|\'(\\t)\'|\'(\\\\)\'|\'\\\'\'|\'(\\\")\'|\'(\\{numeros07}{numeros07}?{numeros07}?)\'
 REALLIT     ({numero}+"."{numero}*{expoente}?)|("."{numero}+{expoente}?)|({numero}+{expoente})
 RESERVED	"++"|"--"|"["|"]"|"auto"|"break"|"case"|"const"|"volatile"|"_Bool"|"_Complex"|"_Imaginary"|"continue"|"restrict"|"default"|"do"|"long"|"inline"|"register"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatie"|"enum"|"extern"|"float"|"for"|"goto"
-
 
 
 %%
@@ -503,6 +502,9 @@ int main(int argc, char *argv[]){
 	}
 
     yylex();
+	yyparse();
+	print_tree(head, 0);
+
     return 0;
 }
 

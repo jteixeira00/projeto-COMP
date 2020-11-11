@@ -2,14 +2,15 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    #include <unistd.h>
     #include "y.tab.h"
-    #define MAX 256
+    #define MAX 512
     int yylex(void);
     int yylex_destroy();
     int yylex();
     void yyerror(char *s);
     
-    int flag2 = 0; //flag return
+    //int flag2 = 0; //flag return
 
 
     typedef struct node{
@@ -25,6 +26,7 @@
     struct node* createnode(char *type, char *value);
     struct node* addchild(node *dad, node *child);
     struct node* addbro(node *n1, node *n2);
+    void print_tree(node *head, int depth);
 
 
 %}
@@ -67,55 +69,90 @@
 
 %%
 
-Program:                    FunctionsAndDeclarations                    {   head = createnode("Program","");
+Program:                    FunctionsAndDeclarations                        {head = createnode("Program","");
                                                                             $$ = head;
 
                                                                             }
     ;
 FunctionsAndDeclarations:   FunctionDefinition FunctionsAndDeclarations       {
-    
+                                                                            if($2!=NULL){
+                                                                                addbro($1, $2);
+                                                                                }
+                                                                            $$ = $1;
                                                                             }
                
-                |           FunctionDeclaration FunctionsAndDeclarations     {}
+                |           FunctionDeclaration FunctionsAndDeclarations     {
+                                                                             if($2!=NULL){
+                                                                                addbro($1, $2);
+                                                                                }
+                                                                            $$ = $1;
+                                                                            }
 
-                |           Declaration FunctionsAndDeclarations            {}
+                |           Declaration FunctionsAndDeclarations            {
+                                                                            if($2!=NULL){
+                                                                                addbro($1, $2);
+                                                                                }
+                                                                            $$ = $1;
+                                                                            }
 
-                |                                                           {}
+                |                                                           {$$ = NULL;}
     ;
 
-FunctionDefinition:         TypeSpec FunctionDeclarator FunctionBody        {}
+FunctionDefinition:         TypeSpec FunctionDeclarator FunctionBody        {struct node *functiondef = createnode("FuncDefinition", "");
+                                                                            addchild(functiondef, $1);
+                                                                            addchild(functiondef, $2);
+                                                                            addchild(functiondef, $3);
+                                                                            addbro($1, $2);
+                                                                            addbro($2, $3);
+                                                                            }
     ;
 
-FunctionBody:               LBRACE DeclarationsAndStatementsOp RBRACE       {}
+FunctionBody:               LBRACE DeclarationsAndStatementsOp RBRACE       {struct node *funcbody = createnode("FuncBody", "");
+                                                                            addchild(funcbody, $2);
+                                                                            $$ = funcbody;
+                                                                            }
     ;
 
-DeclarationsAndStatementsOp:    DeclarationsAndStatements                   {}
-                
-                |                                                           {}
+DeclarationsAndStatementsOp:    DeclarationsAndStatements                   {$$=$1;} 
+                |                                                           {$$ = NULL;}
     ;
 
-DeclarationsAndStatements:      Statement DeclarationsAndStatements         {}
+DeclarationsAndStatements:      Statement DeclarationsAndStatements         {
+                                                                            if($2!=NULL){
+                                                                                addbro($1, $2);}
+                                                                            $$=$1;}
 
-                |               Declaration DeclarationsAndStatements       {}
+                |               Declaration DeclarationsAndStatements       {
+                                                                            if($2!=NULL){
+                                                                                addbro($1, $2);}
+                                                                            $$=$1;}
 
-                |               Statement                                   {}
+                |               Statement                                   {$$ = $1;}
 
-                |               Declaration                                 {}
+                |               Declaration                                 {$$ = $1;}
 
     ;
 
-FunctionDeclaration:            TypeSpec FunctionDeclarator SEMI            {}
+FunctionDeclaration:            TypeSpec FunctionDeclarator SEMI            {struct node *funcdeclaration = createnode("FuncDeclaration", "");
+                                                                            addchild(funcdeclaration, $1);
+                                                                            addchild(funcdeclaration, $2);
+                                                                            addbro($1, $2);
+                                                                            $$ = funcdeclaration;
+                                                                            }
 
     ;
 
-FunctionDeclarator:             ID LPAR ParameterList RPAR                  {}
+FunctionDeclarator:             ID LPAR ParameterList RPAR                  {struct node *id1 = createnode("Id","");
+                                                                            addbro(id1, $3);
+                                                                            $$ = id1;
+                                                                            }
     ;
 
-ParameterList:                  ParameterDeclaration ParameterListOp        {struct node *paramlist = createnode("ParamList");
+ParameterList:                  ParameterDeclaration ParameterListOp        {struct node *paramlist = createnode("ParamList", "");
                                                                             addchild(paramlist, $1);
-                                                                            if($3!=NULL){
+                                                                            if($2!=NULL){
                                                                                 addchild(paramlist, $2);
-                                                                                addbro($1, $3);}
+                                                                                addbro($1, $2);}
                                                                             $$=paramlist;
                                                                             }
     ;
@@ -124,7 +161,7 @@ ParameterListOp:                COMMA ParameterDeclaration ParameterListOp  {str
                                                                             addchild(comma, $2);
                                                                             if($3==NULL){
                                                                                 struct node *null = createnode("Null", "");
-                                                                                addchild(comma, null)
+                                                                                addchild(comma, null);
                                                                                 addbro($2,null);
                                                                                 }
                                                                             else{
@@ -132,7 +169,7 @@ ParameterListOp:                COMMA ParameterDeclaration ParameterListOp  {str
                                                                                 addbro($2,$3);}
                                                                             $$ = comma;
                                                                             }
-                |                                                           {$$ = NULL}
+                |                                                           {$$ = NULL;}
 
     ;
 
@@ -152,7 +189,7 @@ ParameterDeclaration:           TypeSpec                                    {str
 
     ;
 
-Declaration:                    TypeSpec Declarator DeclarationOp SEMI      {struct node *declaration = createnode("Declaration",""):
+Declaration:                    TypeSpec Declarator DeclarationOp SEMI      {struct node *declaration = createnode("Declaration","");
                                                                             addchild(declaration, $1);
                                                                             addchild(declaration, $2);
                                                                             addbro($1, $2);
@@ -168,7 +205,7 @@ DeclarationOp:                  COMMA Declarator DeclarationOp              {str
                                                                             addchild(comma, $2);
                                                                             if($3==NULL){
                                                                                 struct node *null = createnode("Null", "");
-                                                                                addchild(comma, null)
+                                                                                addchild(comma, null);
                                                                                 addbro($2,null);
                                                                                 }
                                                                             else{
@@ -176,7 +213,7 @@ DeclarationOp:                  COMMA Declarator DeclarationOp              {str
                                                                                 addbro($2,$3);}
                                                                             $$ = comma;
                                                                             }
-                |                                                           {$$ = NULL}
+                |                                                           {$$ = NULL;}
 
     ;
 
@@ -470,6 +507,30 @@ struct node *addbro(struct node* n1, struct node* n2){
     }
     return n1;
 }
+
+void print_tree(struct node *head, int depth){
+    if (head == NULL){
+        return;
+    }
+
+    for (int i = 0; i < depth; i++){
+        printf("..");
+    }
+
+    if (strcmp(head->value, "") == 0){
+        printf("%s\n", head->type);
+    }
+    else{
+        printf("%s(%s)\n", head->type, head->value);
+    }
+
+    for (int j = 0; j < head->indexc; j++){
+        print_tree(head->childs[j], depth + 1);
+    }
+
+    free(head);
+}
+
 
 
 void yyerror(char *msg) {
