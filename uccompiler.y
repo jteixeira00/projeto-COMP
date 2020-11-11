@@ -70,16 +70,16 @@
 %%
 
 Program:                    FunctionsAndDeclarations                        {head = createnode("Program","");
-                                                                            $$ = head;
+																			addchild(head,$1);
+                                                                            $$ = head;}
 
-                                                                            }
     ;
+
 FunctionsAndDeclarations:   FunctionDefinition FunctionsAndDeclarations       {
                                                                             if($2!=NULL){
                                                                                 addbro($1, $2);
                                                                                 }
-                                                                            $$ = $1;
-                                                                            }
+                                                                            $$ = $1;}
                
                 |           FunctionDeclaration FunctionsAndDeclarations     {
                                                                              if($2!=NULL){
@@ -122,8 +122,7 @@ DeclarationsAndStatements:      Statement DeclarationsAndStatements         {
                                                                                 addbro($1, $2);}
                                                                             $$=$1;}
 
-                |               Declaration DeclarationsAndStatements       {
-                                                                            if($2!=NULL){
+                |               Declaration DeclarationsAndStatements       {if($2!=NULL){
                                                                                 addbro($1, $2);}
                                                                             $$=$1;}
 
@@ -137,8 +136,7 @@ FunctionDeclaration:            TypeSpec FunctionDeclarator SEMI            {str
                                                                             addchild(funcdeclaration, $1);
                                                                             addchild(funcdeclaration, $2);
                                                                             addbro($1, $2);
-                                                                            $$ = funcdeclaration;
-                                                                            }
+                                                                            $$ = funcdeclaration;}
 
     ;
 
@@ -288,9 +286,9 @@ Statement:                      SEMI                                            
                                                                                 addchild(return1, null);
                                                                                 $$=return1;}
 
-                |               RETURN Expr SEMI                                {struct node *return1 = createnode("Return", "");                                                                                
-                                                                                addchild(return1, $2);
-                                                                                $$=return1;}
+                |				RETURN Expr SEMI								{struct node *return1 = createnode("Return","");
+																				addchild(return1, $2);
+                                                                                $$=return1;}                                                          
 
     ;
 
@@ -509,7 +507,6 @@ struct node *addbro(struct node* n1, struct node* n2){
 }
 
 void print_tree(struct node *head, int depth){
-    printf("aqui\n");
     if (head == NULL){
         printf("autoreturn\n");
         return;
@@ -525,7 +522,6 @@ void print_tree(struct node *head, int depth){
     else{
         printf("%s(%s)\n", head->type, head->value);
     }
-
     for (int j = 0; j < head->indexc; j++){
         print_tree(head->childs[j], depth + 1);
     }
@@ -534,13 +530,10 @@ void print_tree(struct node *head, int depth){
 }
 
 int main(int argc, char *argv[]){
-    printf("here\n");
     yyparse();
-    printf("here2\n");
     print_tree(head, 0);
-
-
 }
+
 
 void yyerror(char *msg) {
     printf("%s", msg);
