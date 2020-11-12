@@ -275,38 +275,54 @@ Statement:                      SEMI                                            
 
                 |               LBRACE StatementError RBRACE                         {$$ = $2;}
         
-                |               LBRACE StatementError StatementError StatementOp RBRACE   {struct node *statlist = createnode("StatList", "");
-                                                                                addchild(statlist, $2);
-                                                                                addchild(statlist, $3);
-                                                                                addbro($2, $3);
-                                                                                if ($4 != NULL){
-                                                                                    addchild(statlist, $4);
-                                                                                    addbro($3, $4);}                                                                                
-                                                                                $$ = statlist;}
+                |               LBRACE StatementError StatementError StatementOp RBRACE     {struct node *statlist = createnode("StatList", "");
+                                                                                            addchild(statlist, $2);
+                                                                                            addchild(statlist, $3);
+                                                                                            addbro($2, $3);
+                                                                                            if ($4 != NULL){
+                                                                                            addchild(statlist, $4);
+                                                                                            addbro($3, $4);}                                                                                
+                                                                                            $$ = statlist;}
 
                 |               IF LPAR Expr RPAR StatementError     %prec THEN      {struct node *if1 = createnode("If","");
                                                                                 addchild(if1, $3);
-                                                                                addchild(if1, $5);
-                                                                                struct node *null = createnode("Null", "");
-                                                                                addchild(if1, null);
-                                                                                addbro($3, $5);
-                                                                                addbro($5, null);
+                                                                                if($5 == NULL){
+                                                                                    struct node *null = createnode("Null", ""); 
+                                                                                    addchild(if1, null); 
+                                                                                    addbro($3, null);
+                                                                                    }
+                                                                                else{
+                                                                                    addchild(if1, $5);
+                                                                                    addbro($3, $5);
+                                                                                    }
                                                                                 $$ = if1;} 
 
 
                 |               IF LPAR Expr RPAR StatementError ELSE StatementError    {struct node *if2 = createnode("If", "");
+
                                                                                 addchild(if2, $3);
-                                                                                addchild(if2, $5);
-                                                                                addchild(if2, $7);
-                                                                                addbro($3, $5);
-                                                                                addbro($5, $7);
+                                                                                if($5 == NULL){
+                                                                                    struct node *null = createnode("Null", ""); addchild(if2, null);}
+                                                                                else{addchild(if2, $5);}
+                                                                                if($7 == NULL){
+                                                                                    struct node *null = createnode("Null", "");addchild(if2, null); }
+                                                                                else{addchild(if2, $7);}
+                                                                                addbro($3, if2->childs[1]);
+                                                                                addbro(if2->childs[1], if2->childs[2]);
                                                                                 $$ = if2;}
 
 
                 |               WHILE LPAR Expr RPAR StatementError             {struct node *while1 = createnode("While", "");
                                                                                 addchild(while1, $3);
-                                                                                addchild(while1, $5);
-                                                                                addbro($3, $5);
+                                                                                if($5 == NULL){
+                                                                                    struct node *null = createnode("Null", ""); 
+                                                                                    addchild(while1, null); 
+                                                                                    addbro($3, null);
+                                                                                    }
+                                                                                else{
+                                                                                    addchild(while1, $5);
+                                                                                    addbro($3, $5);
+                                                                                    }
                                                                                 $$ = while1;}
 
 
@@ -329,7 +345,9 @@ Statement:                      SEMI                                            
 StatementError:               Statement                                         {$$=$1;}
 
     
-                |             error SEMI                                           {$$ = NULL;}
+                |             error SEMI                                         {$$ = NULL;}
+
+                ;
 
 StatementOp:                  StatementError StatementOp                             {if($1 == NULL && $2 == NULL){
                                                                                     $$ = NULL;}
