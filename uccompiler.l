@@ -15,7 +15,7 @@
 
 
 
-
+%option yylineno
 sinal       [+|-]
 letra       [a-zA-Z_]
 numero      [0-9]

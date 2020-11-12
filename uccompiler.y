@@ -4,23 +4,32 @@
     #include <string.h>
     #include <unistd.h>
     #include "y.tab.h"
+    extern char *yytext;
     int type;
 
     int flag1 = 0; 	//tokens encontrados
 	int flag2 = 0; 	//return
 	int lex_erros = 0;
-
+    int yydebug = 1;
     #define MAX 512
-    int yylex(void);
-    int yylex_destroy();
     int yylex();
-    void yyerror(char *s);
+    int yylex_destroy();
+    
+    extern int yywrap();
+    
+
+
+    extern int linha;
+    extern int yyleng;
+    extern int coluna;
+    
+    void yyerror (char *s);
     
     //int flag2 = 0; //flag return
 
 
     typedef struct node{
-        char* type;
+        char* type; 
         char* value;
         struct node *dad;
         struct node *bros;
@@ -44,7 +53,7 @@
 
 %token <str> RESERVED CHRLIT ID REALLIT INTLIT
 
-%type <node> Program FunctionsAndDeclarations FunctionDefinition FunctionBody DeclarationsAndStatementsOp
+%type <node> Program FunctionsAndDeclarations FunctionDefinition FunctionBody DeclarationsAndStatementsOp StatementError
 %type <node> DeclarationsAndStatements FunctionDeclaration FunctionDeclarator ParameterList ParameterListOp ParameterDeclaration
 %type <node> Declaration DeclarationOp TypeSpec Declarator Statement StatementOp Expr ExprOp4
 
@@ -61,7 +70,7 @@
 %left EQ NE
 %left LT LE GT GE
 %left PLUS MINUS
-%left MUL DIV MOD
+%left DIV MUL MOD
 %right NOT
 
 %nonassoc IF
@@ -105,18 +114,18 @@ FunctionsAndDeclarations:   FunctionDefinition FunctionsAndDeclarations       {
     ;
 
 FunctionDefinition:         TypeSpec FunctionDeclarator FunctionBody        {struct node *functiondef = createnode("FuncDefinition", "");
+                                                                           
                                                                             addchild(functiondef, $1);
                                                                             addchild(functiondef, $2);
                                                                             addchild(functiondef, $3);
                                                                             addbro($1, $2);
                                                                             addbro($2, $3);
-                                                                            }
+                                                                            $$ = functiondef;}
     ;
 
 FunctionBody:               LBRACE DeclarationsAndStatementsOp RBRACE       {struct node *funcbody = createnode("FuncBody", "");
                                                                             addchild(funcbody, $2);
-                                                                            $$ = funcbody;
-                                                                            }
+                                                                            $$ = funcbody;}
     ;
 
 DeclarationsAndStatementsOp:    DeclarationsAndStatements                   {$$=$1;} 
@@ -195,13 +204,16 @@ Declaration:                    TypeSpec Declarator DeclarationOp SEMI      {str
                                                                                 addbro(declaration,  $3);
                                                                                 }
 
-                                                                            $$ = declaration;
-                                                                            } 
+                                                                            $$ = declaration;}
+
+
+                |               error SEMI                                  {struct node *null = createnode("Null","");
+                                                                            $$ = null;}
+                                                                             
     
     ;
 
 DeclarationOp:                  COMMA Declarator DeclarationOp              {struct node *declaration = createnode("Declaration", "");
-
                                                                             if(type == 0){
                                                                                 addchild(declaration,createnode("Char",""));                                                                                
                                                                             }
@@ -261,9 +273,9 @@ Statement:                      SEMI                                            
                 |               Expr SEMI                                       {$$ = $1;}
 
 
-                |               LBRACE Statement RBRACE                         {$$ = $2;}
+                |               LBRACE StatementError RBRACE                         {$$ = $2;}
         
-                |               LBRACE Statement Statement StatementOp RBRACE   {struct node *statlist = createnode("StatList", "");
+                |               LBRACE StatementError StatementError StatementOp RBRACE   {struct node *statlist = createnode("StatList", "");
                                                                                 addchild(statlist, $2);
                                                                                 addchild(statlist, $3);
                                                                                 addbro($2, $3);
@@ -272,7 +284,7 @@ Statement:                      SEMI                                            
                                                                                     addbro($3, $4);}                                                                                
                                                                                 $$ = statlist;}
 
-                |               IF LPAR Expr RPAR Statement     %prec THEN      {struct node *if1 = createnode("If","");
+                |               IF LPAR Expr RPAR StatementError     %prec THEN      {struct node *if1 = createnode("If","");
                                                                                 addchild(if1, $3);
                                                                                 addchild(if1, $5);
                                                                                 struct node *null = createnode("Null", "");
@@ -282,7 +294,7 @@ Statement:                      SEMI                                            
                                                                                 $$ = if1;} 
 
 
-                |               IF LPAR Expr RPAR Statement ELSE Statement      {struct node *if2 = createnode("If", "");
+                |               IF LPAR Expr RPAR StatementError ELSE StatementError    {struct node *if2 = createnode("If", "");
                                                                                 addchild(if2, $3);
                                                                                 addchild(if2, $5);
                                                                                 addchild(if2, $7);
@@ -291,7 +303,7 @@ Statement:                      SEMI                                            
                                                                                 $$ = if2;}
 
 
-                |               WHILE LPAR Expr RPAR Statement                  {struct node *while1 = createnode("While", "");
+                |               WHILE LPAR Expr RPAR StatementError             {struct node *while1 = createnode("While", "");
                                                                                 addchild(while1, $3);
                                                                                 addchild(while1, $5);
                                                                                 addbro($3, $5);
@@ -305,13 +317,21 @@ Statement:                      SEMI                                            
 
                 |				RETURN Expr SEMI								{struct node *return1 = createnode("Return","");
 																				addchild(return1, $2);
-                                                                                $$=return1;}                                                          
+                                                                                $$=return1;}      
+
+                              
+
+                |              LBRACE error RBRACE                              {struct node *null = createnode("Null","");
+                                                                                 $$ = null;}                                                                                                      
 
     ;
 
+StatementError:               Statement                                         {$$=$1;}
 
+    
+                |             error SEMI                                           {$$ = NULL;}
 
-StatementOp:                  Statement StatementOp                             {if($1 == NULL && $2 == NULL){
+StatementOp:                  StatementError StatementOp                             {if($1 == NULL && $2 == NULL){
                                                                                     $$ = NULL;}
                                                                                     else if ($1 == NULL){
                                                                                         $$ = $2;}
@@ -331,14 +351,14 @@ Expr:                           Expr ASSIGN Expr                                
                                                                                  addbro($1, $3);
                                                                                  $$ = store;}
 
-                |               Expr COMMA Expr                                 {struct node *comma = createnode("Comma","");
+                |               Expr COMMA Expr                        {struct node *comma = createnode("Comma","");
                                                                                  addchild(comma, $1);
                                                                                  addchild(comma, $3);
                                                                                  addbro($1, $3);
                                                                                  $$ = comma;}
 
 
-                |               Expr PLUS Expr                                {struct node *add = createnode("Add","");
+                |               Expr PLUS Expr                         {struct node *add = createnode("Add","");
                                                                                 addchild(add, $1);
                                                                                     addchild(add, $3);
                                                                                  addbro($1, $3);
@@ -350,7 +370,7 @@ Expr:                           Expr ASSIGN Expr                                
                                                                                 addbro($1, $3);
                                                                                 $$ = sub;}
                                                                                 
-                |               Expr MUL Expr                                {struct node *mul = createnode("Mul","");
+                |               Expr MUL Expr                              {struct node *mul = createnode("Mul","");
                                                                                 addchild(mul, $1);
                                                                                 addchild(mul, $3);
                                                                                 addbro($1, $3);
@@ -433,10 +453,10 @@ Expr:                           Expr ASSIGN Expr                                
                                                                                 $$ = gt;}
 
                 
-                |               PLUS Expr                                       {struct node *plus = createnode("Plus","");
+                |               PLUS Expr           %prec NOT                            {struct node *plus = createnode("Plus","");
                                                                                     $$ = addchild(plus,$2);}
 
-                |               MINUS Expr                                      {struct node *minus = createnode("Minus","");
+                |               MINUS Expr          %prec NOT                             {struct node *minus = createnode("Minus","");
                                                                                     $$ = addchild(minus,$2);}
 
                 |               NOT Expr                                        {struct node *not = createnode("Not","");
@@ -459,16 +479,19 @@ Expr:                           Expr ASSIGN Expr                                
 
                 |               REALLIT                                         {$$ = createnode("RealLit", $1);}
                 
-                |               LPAR Expr RPAR                                  {$$ = $2;}  
+                |               LPAR Expr RPAR                                  {$$ = $2;} 
+
+                |               ID LPAR error RPAR                              {struct node *null = createnode("Null","");
+                                                                                 $$ = null;}
+                
+                |                LPAR error RPAR                                {struct node *null = createnode("Null","");
+                                                                                 $$ = null;}
     ;
 
 
     
-ExprOp4:                        ExprOp4 COMMA Expr                            	{struct node *comma = createnode("Comma","");
-                                                                                 addchild(comma, $1);
-                                                                                 addchild(comma, $3);
-                                                                                 addbro($1, $3);
-                                                                                 $$ = comma;}
+ExprOp4:                        ExprOp4 COMMA Expr                            	{addbro($1, $3);
+                                                                                 $$ = $1;}
                 |               Expr  %prec THEN                                {$$ = $1;}            
                 |                                                               {$$ = NULL; }
     ;
@@ -582,5 +605,5 @@ int main(int argc, char **argv){
 
 
 void yyerror(char *msg) {
-    printf("%s", msg);
+    printf("Line %d, col %d: %s: %s\n", linha , coluna , msg , yytext);
 }

@@ -1,19 +1,44 @@
+void soma(int a, char b ,,) {
+    prinft('v');
+    print(15.434);
+}
+
+void soma(int a, char b , ,,,,,);
+
 int main(void) {
-    char c;
-    int lowercase_vowel, uppercase_vowel;
-    printf('E');
-    scanf('%', c);
+    char a= -4+3-(-3);
+    int b=a+4-(-a);
 
-    // evaluates to 1 if variable c is a lowercase vowel
-    lowercase_vowel = (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
+    while ( ( a == 3 && b < a ) || a < 3 ) {
+        a=b;
+        b=3;
+        while (1) {
+            a=0;
+        }
+        c=5;
+    }
 
-    // evaluates to 1 if variable c is a uppercase vowel
-    uppercase_vowel = (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
+    soma(5,4, );
+    return a;
+}
 
-    // evaluates to 1 (true) if c is a vowel
-    if (lowercase_vowel || uppercase_vowel)
-        printf('%', c);
-    else
-        printf('%', c);
-    return 0;
+int main(void) {
+    f(a+b,b-c);
+    (t,h,a+1);
+
+    while ( 1) {
+        a=b;
+        b=3;
+        while (1) {
+            a=0;
+            func(a);
+            a+b;
+            if(1)
+                if(2)
+                    putchar('a');
+                    i=i+1;
+        }
+        c=5;
+    } a=1;
+    return;
 }
