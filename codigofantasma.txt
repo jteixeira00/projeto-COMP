@@ -1,0 +1,8 @@
+
+int main(void){
+while(a){
+
+	}
+{;}
+{statement1 = 1;}
+}

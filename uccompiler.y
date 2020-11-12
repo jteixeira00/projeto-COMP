@@ -18,7 +18,7 @@
     extern int yywrap();
     
 
-
+    int printtree = 1;
     extern int linha;
     extern int yyleng;
     extern int coluna;
@@ -55,7 +55,7 @@
 
 %type <node> Program FunctionsAndDeclarations FunctionDefinition FunctionBody DeclarationsAndStatementsOp StatementError
 %type <node> DeclarationsAndStatements FunctionDeclaration FunctionDeclarator ParameterList ParameterListOp ParameterDeclaration
-%type <node> Declaration DeclarationOp TypeSpec Declarator Statement StatementOp Expr ExprOp4
+%type <node> Declaration DeclarationOp TypeSpec Declarator Statement Expr ExprOp4 StatementAux
 
 
 
@@ -110,7 +110,7 @@ FunctionsAndDeclarations:   FunctionDefinition FunctionsAndDeclarations       {
                                                                             $$ = $1;
                                                                             }
 
-                |                                                           {$$ = NULL;}
+                 |                                                           {$$ = NULL;} 
     ;
 
 FunctionDefinition:         TypeSpec FunctionDeclarator FunctionBody        {struct node *functiondef = createnode("FuncDefinition", "");
@@ -132,13 +132,14 @@ DeclarationsAndStatementsOp:    DeclarationsAndStatements                   {$$=
                 |                                                           {$$ = NULL;}
     ;
 
-DeclarationsAndStatements:      Statement DeclarationsAndStatements         {
-                                                                            if($2!=NULL){
-                                                                                addbro($1, $2);}
-                                                                            $$=$1;}
+DeclarationsAndStatements:       DeclarationsAndStatements Statement        {
 
-                |               Declaration DeclarationsAndStatements       {if($2!=NULL){
-                                                                                addbro($1, $2);}
+                                                                            addbro($1,$2);
+                                                                            $$ = $1;
+                                                                            
+                                                                            }
+
+                |               DeclarationsAndStatements Declaration        {addbro($1, $2);
                                                                             $$=$1;}
 
                 |               Statement                                   {$$ = $1;}
@@ -268,21 +269,43 @@ Declarator:                     ID                                          {$$ 
 
     ;
 
+StatementAux:                   StatementError                                  {$$ = $1;}
+
+                |               StatementError StatementAux                     {addbro($1, $2); 
+                                                                                if($1!=NULL){
+                                                                                    $$ = $1;
+                                                                                }
+                                                                                else{
+                                                                                    $$ = $2;}}
+
+                ;
+
+StatementError:               Statement                                         {$$=$1;}
+
+
+                |             error SEMI                                         {struct node *null = createnode("Null", ""); $$=null;}
+
+                ;
+
+
 Statement:                      SEMI                                            {$$ = NULL;}
 
                 |               Expr SEMI                                       {$$ = $1;}
 
 
-                |               LBRACE StatementError RBRACE                         {$$ = $2;}
-        
-                |               LBRACE StatementError StatementError StatementOp RBRACE     {struct node *statlist = createnode("StatList", "");
-                                                                                            addchild(statlist, $2);
-                                                                                            addchild(statlist, $3);
-                                                                                            addbro($2, $3);
-                                                                                            if ($4 != NULL){
-                                                                                            addchild(statlist, $4);
-                                                                                            addbro($3, $4);}                                                                                
-                                                                                            $$ = statlist;}
+                |               LBRACE StatementAux RBRACE                      {if($2!=NULL && $2->bros != NULL){
+                                                                                    struct node *statlist = createnode("StatList", "");
+                                                                                    addchild(statlist, $2);
+                                                                                    $$ = statlist;
+
+                                                                                }
+                                                                                else if($2!=NULL && $2->bros == NULL){
+                                                                                    $$ = $2;
+                                                                                }
+                                                                                else{$$ = NULL;}
+                                                                                }
+
+                |               LBRACE RBRACE                                   {struct node *null = createnode("Null", ""); $$=null;}              
 
                 |               IF LPAR Expr RPAR StatementError     %prec THEN      {struct node *if1 = createnode("If","");
                                                                                 addchild(if1, $3);
@@ -290,10 +313,16 @@ Statement:                      SEMI                                            
                                                                                     struct node *null = createnode("Null", ""); 
                                                                                     addchild(if1, null); 
                                                                                     addbro($3, null);
+                                                                                    struct node *null1 = createnode("Null", ""); 
+                                                                                    addchild(if1, null1);
+                                                                                    addbro(null, null1);
                                                                                     }
                                                                                 else{
                                                                                     addchild(if1, $5);
                                                                                     addbro($3, $5);
+                                                                                    struct node *null1 = createnode("Null", ""); 
+                                                                                    addchild(if1, null1);
+                                                                                    addbro($5, null1);
                                                                                     }
                                                                                 $$ = if1;} 
 
@@ -305,10 +334,12 @@ Statement:                      SEMI                                            
                                                                                     struct node *null = createnode("Null", ""); addchild(if2, null);}
                                                                                 else{addchild(if2, $5);}
                                                                                 if($7 == NULL){
+                                                                                    
                                                                                     struct node *null = createnode("Null", "");addchild(if2, null); }
                                                                                 else{addchild(if2, $7);}
                                                                                 addbro($3, if2->childs[1]);
                                                                                 addbro(if2->childs[1], if2->childs[2]);
+                                                                                
                                                                                 $$ = if2;}
 
 
@@ -342,25 +373,7 @@ Statement:                      SEMI                                            
 
     ;
 
-StatementError:               Statement                                         {$$=$1;}
 
-    
-                |             error SEMI                                         {$$ = NULL;}
-
-                ;
-
-StatementOp:                  StatementError StatementOp                             {if($1 == NULL && $2 == NULL){
-                                                                                    $$ = NULL;}
-                                                                                    else if ($1 == NULL){
-                                                                                        $$ = $2;}
-                                                                                    else if ($2 == NULL){
-                                                                                        $$ = $1;}
-                                                                                    else{
-                                                                                        $$ = addbro($1, $2);}
-                                                                                }
-                |                                                               {$$ = NULL;}
-                
-    ;                 
 
 
 Expr:                           Expr ASSIGN Expr                                {struct node *store = createnode("Store","");
@@ -601,7 +614,9 @@ int main(int argc, char **argv){
             // arvore, return no lex
             flag2 = 1;
             yyparse();
+            if(printtree == 1){
             print_tree(head, 0);
+            }
         }
 
         else if (strcmp(argv[1], "-e2") == 0){
@@ -615,7 +630,9 @@ int main(int argc, char **argv){
         }
 	}
 	if (argc == 1){
+        flag2 = 1;
 		yylex();
+        yyparse();
 	}
 
 	return 0;
@@ -623,5 +640,6 @@ int main(int argc, char **argv){
 
 
 void yyerror(char *msg) {
-    printf("Line %d, col %d: %s: %s\n", linha , coluna , msg , yytext);
+    printtree = 0;
+    printf("Line %d, col %d: %s: %s\n", linha , (int)(coluna-strlen(yytext)) , msg , yytext);
 }
