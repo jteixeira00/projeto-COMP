@@ -1,8 +1,0 @@
-int chama(void) {
-    if (o==e) {
-        ;;;
-        while (1) {
-            ;;;
-        }
-    }
-}

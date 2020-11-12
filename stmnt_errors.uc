@@ -93,12 +93,12 @@ int main(void){
     
     { ) }
     
-    a=1; a=1; a=1;
+    a=1; a=1; a=1;  
     
     {
        if()
        if()
-       if() 
+       if()
     }
     
     a=1; a=1; a=1;

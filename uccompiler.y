@@ -294,9 +294,9 @@ Statement:                      SEMI                                            
 
 
                 |               LBRACE StatementAux RBRACE                      {if($2!=NULL && $2->bros != NULL){
-                                                                                    struct node *statlist = createnode("StatList", "");
-                                                                                    addchild(statlist, $2);
-                                                                                    $$ = statlist;
+                                                                                struct node *statlist = createnode("StatList", "");
+                                                                                addchild(statlist, $2);
+                                                                                $$ = statlist;
 
                                                                                 }
                                                                                 else if($2!=NULL && $2->bros == NULL){
@@ -600,18 +600,17 @@ void print_tree(struct node *head, int depth){
 int main(int argc, char **argv){
     if (argc > 1){
         if (strcmp(argv[1], "-l") == 0){
-            //tokens e erros do lex
+            //lex completo
             flag1 = 1;
             yylex();
         }
-
         else if (strcmp(argv[1], "-e1") == 0){
-            // erros lex;
+            //lex erros
             yylex();
         }
 
         else if (strcmp(argv[1], "-t") == 0){
-            // arvore, return no lex
+            //árvore
             flag2 = 1;
             yyparse();
             if(printtree == 1){
@@ -620,7 +619,7 @@ int main(int argc, char **argv){
         }
 
         else if (strcmp(argv[1], "-e2") == 0){
-            // erros lex;
+            // erros lex e sintaxe
             flag2 = 1;
             yyparse();
         }
@@ -630,8 +629,9 @@ int main(int argc, char **argv){
         }
 	}
 	if (argc == 1){
+
+        //erros lex e sintaxe
         flag2 = 1;
-		yylex();
         yyparse();
 	}
 
