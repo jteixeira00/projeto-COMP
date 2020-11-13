@@ -55,7 +55,7 @@
 
 %type <node> Program FunctionsAndDeclarations FunctionDefinition FunctionBody DeclarationsAndStatementsOp StatementError
 %type <node> DeclarationsAndStatements FunctionDeclaration FunctionDeclarator ParameterList ParameterListOp ParameterDeclaration
-%type <node> Declaration DeclarationOp TypeSpec Declarator Statement Expr ExprOp4 StatementAux
+%type <node> Declaration DeclarationOp TypeSpec Declarator Statement Expr ExprOp4 StatementAux FunctionsAndDeclarationsOP
 
 
 
@@ -88,30 +88,38 @@ Program:                    FunctionsAndDeclarations                        {hea
 																			addchild(head,$1);
                                                                             $$ = head;}
 
+                
     ;
 
-FunctionsAndDeclarations:   FunctionDefinition FunctionsAndDeclarations       {
+FunctionsAndDeclarations:   FunctionDefinition FunctionsAndDeclarationsOP       {
                                                                             if($2!=NULL){
                                                                                 addbro($1, $2);
                                                                                 }
                                                                             $$ = $1;}
                
-                |           FunctionDeclaration FunctionsAndDeclarations     {
+                |           FunctionDeclaration FunctionsAndDeclarationsOP     {
                                                                              if($2!=NULL){
                                                                                 addbro($1, $2);
                                                                                 }
                                                                             $$ = $1;
                                                                             }
 
-                |           Declaration FunctionsAndDeclarations            {
+                |           Declaration FunctionsAndDeclarationsOP            {
                                                                             if($2!=NULL){
                                                                                 addbro($1, $2);
                                                                                 }
                                                                             $$ = $1;
                                                                             }
 
-                 |                                                           {$$ = NULL;} 
+                 
     ;
+
+
+
+FunctionsAndDeclarationsOP: FunctionsAndDeclarations                        {$$=$1;}
+
+                |                                                           {$$=NULL;}
+;
 
 FunctionDefinition:         TypeSpec FunctionDeclarator FunctionBody        {struct node *functiondef = createnode("FuncDefinition", "");
                                                                            
