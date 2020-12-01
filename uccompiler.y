@@ -18,30 +18,27 @@
     extern int yywrap();
     
 
-    int printtree = 1;
+    int printtreeflag = 1;
     extern int linha;
     extern int yyleng;
     extern int coluna;
     
     void yyerror (char *s);
-    
-    //int flag2 = 0; //flag return
-
-
+  
     typedef struct node{
         char* type; 
         char* value;
         struct node *dad;
         struct node *bros;
         struct node *childs[MAX];
-        int indexc;
+        int nchildren;
     }node;
 
     struct node *head = NULL;
     struct node* createnode(char *type, char *value);
     struct node* addchild(node *dad, node *child);
     struct node* addbro(node *n1, node *n2);
-    void print_tree(node *head, int depth);
+    void printtree(node *head, int level);
 
 
 %}
@@ -56,8 +53,6 @@
 %type <node> Program FunctionsAndDeclarations FunctionDefinition FunctionBody DeclarationsAndStatementsOp StatementError
 %type <node> DeclarationsAndStatements FunctionDeclaration FunctionDeclarator ParameterList ParameterListOp ParameterDeclaration
 %type <node> Declaration DeclarationOp TypeSpec Declarator Statement Expr ExprOp4 StatementAux FunctionsAndDeclarationsOP
-
-
 
 
 %left COMMA
@@ -91,35 +86,34 @@ Program:                    FunctionsAndDeclarations                        {hea
                 
     ;
 
-FunctionsAndDeclarations:   FunctionDefinition FunctionsAndDeclarationsOP       {
-                                                                            if($2!=NULL){
+FunctionsAndDeclarations:   FunctionDefinition FunctionsAndDeclarationsOP   {if($2!=NULL){
                                                                                 addbro($1, $2);
                                                                                 }
                                                                             $$ = $1;}
                
                 |           FunctionDeclaration FunctionsAndDeclarationsOP     {
-                                                                             if($2!=NULL){
-                                                                                addbro($1, $2);
-                                                                                }
-                                                                            $$ = $1;
-                                                                            }
-
-                |           Declaration FunctionsAndDeclarationsOP            {
                                                                             if($2!=NULL){
                                                                                 addbro($1, $2);
                                                                                 }
                                                                             $$ = $1;
                                                                             }
 
-                 
+                |           Declaration FunctionsAndDeclarationsOP           {
+                                                                            if($2!=NULL){
+                                                                                addbro($1, $2);
+                                                                                }
+                                                                            $$ = $1;
+                                                                            }
+                                    
+                
     ;
 
 
-
-FunctionsAndDeclarationsOP: FunctionsAndDeclarations                        {$$=$1;}
+  
+    FunctionsAndDeclarationsOP: FunctionsAndDeclarations                    {$$=$1;}
 
                 |                                                           {$$=NULL;}
-;
+    ;
 
 FunctionDefinition:         TypeSpec FunctionDeclarator FunctionBody        {struct node *functiondef = createnode("FuncDefinition", "");
                                                                            
@@ -141,13 +135,17 @@ DeclarationsAndStatementsOp:    DeclarationsAndStatements                   {$$=
     ;
 
 DeclarationsAndStatements:       DeclarationsAndStatements Statement        {
-
-                                                                            addbro($1,$2);
-                                                                            $$ = $1;
+                                                                            if($1 != NULL){
+                                                                                addbro($1,$2);
+                                                                                $$ = $1;}
+                                                                            else{
+                                                                                $$=$2;
+                                                                            }
+                                                                            
                                                                             
                                                                             }
 
-                |               DeclarationsAndStatements Declaration        {addbro($1, $2);
+                |               DeclarationsAndStatements Declaration       {addbro($1, $2);
                                                                             $$=$1;}
 
                 |               Statement                                   {$$ = $1;}
@@ -269,11 +267,11 @@ TypeSpec:                       CHAR                                        {$$ 
     ;                        
 
 
-Declarator:                     ID                                          {$$ = createnode("Id", $1);}
+Declarator:                     ID                                              {$$ = createnode("Id", $1);}
 
-                |               ID ASSIGN Expr                              {struct node *id1 = createnode("Id", $1);
-                                                                                 addbro(id1, $3);
-                                                                                 $$ = id1;}
+                |               ID ASSIGN Expr                                  {struct node *id1 = createnode("Id", $1);
+                                                                                addbro(id1, $3);
+                                                                                $$ = id1;}
 
     ;
 
@@ -291,7 +289,7 @@ StatementAux:                   StatementError                                  
 StatementError:               Statement                                         {$$=$1;}
 
 
-                |             error SEMI                                         {struct node *null = createnode("Null", ""); $$=null;}
+                |             error SEMI                                        {struct node *null = createnode("Null", ""); $$=null;}
 
                 ;
 
@@ -313,11 +311,13 @@ Statement:                      SEMI                                            
                                                                                 else{$$ = NULL;}
                                                                                 }
 
-                |               LBRACE RBRACE                                   {struct node *null = createnode("Null", ""); $$=null;}              
+                |               LBRACE RBRACE                                   {
+                                                                                //struct node *null = createnode("Null", ""); $$=null;
+                                                                                $$=NULL;}              
 
-                |               IF LPAR Expr RPAR StatementError     %prec THEN      {struct node *if1 = createnode("If","");
-                                                                                addchild(if1, $3);
-                                                                                if($5 == NULL){
+                |               IF LPAR Expr RPAR StatementError     %prec THEN     {struct node *if1 = createnode("If","");
+                                                                                    addchild(if1, $3);
+                                                                                    if($5 == NULL){
                                                                                     struct node *null = createnode("Null", ""); 
                                                                                     addchild(if1, null); 
                                                                                     addbro($3, null);
@@ -325,30 +325,30 @@ Statement:                      SEMI                                            
                                                                                     addchild(if1, null1);
                                                                                     addbro(null, null1);
                                                                                     }
-                                                                                else{
+                                                                                    else{
                                                                                     addchild(if1, $5);
                                                                                     addbro($3, $5);
                                                                                     struct node *null1 = createnode("Null", ""); 
                                                                                     addchild(if1, null1);
                                                                                     addbro($5, null1);
                                                                                     }
-                                                                                $$ = if1;} 
+                                                                                    $$ = if1;} 
 
 
                 |               IF LPAR Expr RPAR StatementError ELSE StatementError    {struct node *if2 = createnode("If", "");
 
-                                                                                addchild(if2, $3);
-                                                                                if($5 == NULL){
-                                                                                    struct node *null = createnode("Null", ""); addchild(if2, null);}
-                                                                                else{addchild(if2, $5);}
-                                                                                if($7 == NULL){
+                                                                                        addchild(if2, $3);
+                                                                                        if($5 == NULL){
+                                                                                        struct node *null = createnode("Null", ""); addchild(if2, null);}
+                                                                                        else{addchild(if2, $5);}
+                                                                                        if($7 == NULL){
                                                                                     
-                                                                                    struct node *null = createnode("Null", "");addchild(if2, null); }
-                                                                                else{addchild(if2, $7);}
-                                                                                addbro($3, if2->childs[1]);
-                                                                                addbro(if2->childs[1], if2->childs[2]);
+                                                                                        struct node *null = createnode("Null", "");addchild(if2, null); }
+                                                                                        else{addchild(if2, $7);}
+                                                                                        addbro($3, if2->childs[1]);
+                                                                                        addbro(if2->childs[1], if2->childs[2]);
                                                                                 
-                                                                                $$ = if2;}
+                                                                                        $$ = if2;}
 
 
                 |               WHILE LPAR Expr RPAR StatementError             {struct node *while1 = createnode("While", "");
@@ -377,7 +377,7 @@ Statement:                      SEMI                                            
                               
 
                 |              LBRACE error RBRACE                              {struct node *null = createnode("Null","");
-                                                                                 $$ = null;}                                                                                                      
+                                                                                $$ = null;}                                                                                                      
 
     ;
 
@@ -385,55 +385,55 @@ Statement:                      SEMI                                            
 
 
 Expr:                           Expr ASSIGN Expr                                {struct node *store = createnode("Store","");
-                                                                                 addchild(store, $1);
-                                                                                 addchild(store, $3);
-                                                                                 addbro($1, $3);
-                                                                                 $$ = store;}
+                                                                                addchild(store, $1);
+                                                                                addchild(store, $3);
+                                                                                addbro($1, $3);
+                                                                                $$ = store;}
 
-                |               Expr COMMA Expr                        {struct node *comma = createnode("Comma","");
-                                                                                 addchild(comma, $1);
-                                                                                 addchild(comma, $3);
-                                                                                 addbro($1, $3);
-                                                                                 $$ = comma;}
+                |               Expr COMMA Expr                                 {struct node *comma = createnode("Comma","");
+                                                                                addchild(comma, $1);
+                                                                                addchild(comma, $3);
+                                                                                addbro($1, $3);
+                                                                                $$ = comma;}
 
 
-                |               Expr PLUS Expr                         {struct node *add = createnode("Add","");
+                |               Expr PLUS Expr                                  {struct node *add = createnode("Add","");
                                                                                 addchild(add, $1);
-                                                                                    addchild(add, $3);
-                                                                                 addbro($1, $3);
-                                                                                 $$ = add;}                                                                                
+                                                                                addchild(add, $3);
+                                                                                addbro($1, $3);
+                                                                                $$ = add;}                                                                                
 
-                |               Expr MINUS Expr                                {struct node *sub = createnode("Sub","");
+                |               Expr MINUS Expr                                 {struct node *sub = createnode("Sub","");
                                                                                 addchild(sub, $1);
                                                                                 addchild(sub, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = sub;}
                                                                                 
-                |               Expr MUL Expr                              {struct node *mul = createnode("Mul","");
+                |               Expr MUL Expr                                   {struct node *mul = createnode("Mul","");
                                                                                 addchild(mul, $1);
                                                                                 addchild(mul, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = mul;}
 
-                |               Expr DIV Expr                                {struct node *div = createnode("Div","");
+                |               Expr DIV Expr                                   {struct node *div = createnode("Div","");
                                                                                 addchild(div, $1);
                                                                                 addchild(div, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = div;}
 
-                |               Expr MOD Expr                                {struct node *mod = createnode("Mod","");
+                |               Expr MOD Expr                                   {struct node *mod = createnode("Mod","");
                                                                                 addchild(mod, $1);
                                                                                 addchild(mod, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = mod;}
             
-                |               Expr OR Expr                               {struct node *or = createnode("Or","");
+                |               Expr OR Expr                                    {struct node *or = createnode("Or","");
                                                                                 addchild(or, $1);
                                                                                 addchild(or, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = or;}
 
-                |               Expr AND Expr                               {struct node *and = createnode("And","");
+                |               Expr AND Expr                                   {struct node *and = createnode("And","");
                                                                                 addchild(and, $1);
                                                                                 addchild(and, $3);
                                                                                 addbro($1, $3);
@@ -445,61 +445,63 @@ Expr:                           Expr ASSIGN Expr                                
                                                                                 addbro($1, $3);
                                                                                 $$ = bitewiseand;}
 
-                |               Expr BITWISEOR Expr                               {struct node *bitewiseor = createnode("BitWiseOr","");
+                |               Expr BITWISEOR Expr                             {struct node *bitewiseor = createnode("BitWiseOr","");
                                                                                 addchild(bitewiseor, $1);
                                                                                 addchild(bitewiseor, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = bitewiseor;}
 
-                |               Expr BITWISEXOR Expr                               {struct node *bitewisexor = createnode("BitWiseXor","");
+                |               Expr BITWISEXOR Expr                            {struct node *bitewisexor = createnode("BitWiseXor","");
                                                                                 addchild(bitewisexor, $1);
                                                                                 addchild(bitewisexor, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = bitewisexor;}
 
-                |               Expr EQ Expr                                {struct node *eq = createnode("Eq","");
+                |               Expr EQ Expr                                    {struct node *eq = createnode("Eq","");
                                                                                 addchild(eq, $1);
                                                                                 addchild(eq, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = eq;}
 
-                |               Expr NE Expr                                {struct node *ne = createnode("Ne","");
+                |               Expr NE Expr                                    {struct node *ne = createnode("Ne","");
                                                                                 addchild(ne, $1);
                                                                                 addchild(ne, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = ne;}
 
-                |               Expr LE Expr                                {struct node *le = createnode("Le","");
+                |               Expr LE Expr                                    {struct node *le = createnode("Le","");
                                                                                 addchild(le, $1);
                                                                                 addchild(le, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = le;}
-                |               Expr GE Expr                                {struct node *ge = createnode("Ge","");
+
+                |               Expr GE Expr                                    {struct node *ge = createnode("Ge","");
                                                                                 addchild(ge, $1);
                                                                                 addchild(ge, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = ge;}
 
-                |               Expr LT Expr                                {struct node *lt = createnode("Lt","");
+                |               Expr LT Expr                                    {struct node *lt = createnode("Lt","");
                                                                                 addchild(lt, $1);
                                                                                 addchild(lt, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = lt;}
-                |               Expr GT Expr                                {struct node *gt = createnode("Gt","");
+
+                |               Expr GT Expr                                    {struct node *gt = createnode("Gt","");
                                                                                 addchild(gt, $1);
                                                                                 addchild(gt, $3);
                                                                                 addbro($1, $3);
                                                                                 $$ = gt;}
 
                 
-                |               PLUS Expr           %prec NOT                            {struct node *plus = createnode("Plus","");
-                                                                                    $$ = addchild(plus,$2);}
+                |               PLUS Expr           %prec NOT                   {struct node *plus = createnode("Plus","");
+                                                                                $$ = addchild(plus,$2);}
 
-                |               MINUS Expr          %prec NOT                             {struct node *minus = createnode("Minus","");
-                                                                                    $$ = addchild(minus,$2);}
+                |               MINUS Expr          %prec NOT                   {struct node *minus = createnode("Minus","");
+                                                                                $$ = addchild(minus,$2);}
 
                 |               NOT Expr                                        {struct node *not = createnode("Not","");
-                                                                                    $$ = addchild(not,$2);}
+                                                                                $$ = addchild(not,$2);}
 
 
                 |               ID LPAR ExprOp4 RPAR                            {struct node *id1 = createnode("Id",$1);
@@ -507,6 +509,11 @@ Expr:                           Expr ASSIGN Expr                                
                                                                                 addchild(call, id1);
                                                                                 addchild(call, $3);
                                                                                 addbro(id1, $3); 
+                                                                                $$ = call;}
+
+                |               ID LPAR RPAR                                    {struct node *id1 = createnode("Id",$1);
+                                                                                struct node *call = createnode("Call","");
+                                                                                addchild(call, id1);
                                                                                 $$ = call;}
                                 
 
@@ -532,20 +539,19 @@ Expr:                           Expr ASSIGN Expr                                
 ExprOp4:                        ExprOp4 COMMA Expr                            	{addbro($1, $3);
                                                                                  $$ = $1;}
                 |               Expr  %prec THEN                                {$$ = $1;}            
-                |                                                               {$$ = NULL; }
+             
     ;
 
 
 %%
 struct node* createnode(char *type, char *value){
     node *new = (node *)malloc(sizeof(node));
-
     if(new==NULL){
         return NULL;
     }
     new->type = type;
     new->value = value;
-    new->indexc = 0;
+    new->nchildren = 0;
     new->dad = NULL;
     new->bros = NULL;
     return new;
@@ -555,17 +561,14 @@ struct node* addchild(struct node* dad, struct node* child){
     if (dad == NULL || child == NULL){
        return NULL;
     }
-
-    dad->childs[dad->indexc] = child;
-    dad->indexc++;
+    dad->childs[dad->nchildren] = child;
+    dad->nchildren++;
     child->dad = dad;
-
     node *aux = child->bros;
-
     while (aux != NULL){
         aux->dad = dad;
-        dad->childs[dad->indexc] = aux;
-        dad->indexc++;
+        dad->childs[dad->nchildren] = aux;
+        dad->nchildren++;
         aux = aux->bros;
     }
 
@@ -583,26 +586,25 @@ struct node *addbro(struct node* n1, struct node* n2){
     return n1;
 }
 
-void print_tree(struct node *head, int depth){
+void printtree(struct node *head, int level){
+    int currentlevel=0;
     if (head == NULL){
         return;
     }
-
-    for (int i = 0; i < depth; i++){
+    while (currentlevel++<level){
         printf("..");
     }
-
-    if (strcmp(head->value, "") == 0){
-        printf("%s\n", head->type);
+    if (strcmp(head->value, "") != 0){
+         printf("%s(%s)\n", head->type, head->value);
+        
     }
     else{
-        printf("%s(%s)\n", head->type, head->value);
+       printf("%s\n", head->type);
     }
-    for (int j = 0; j < head->indexc; j++){
-        print_tree(head->childs[j], depth + 1);
+    for (int j = 0; j < head->nchildren; j++){
+        printtree(head->childs[j], level + 1);
     }
-
-    free(head);
+    free(head); //funçao recursiva, vai libertar cada nó depois de o printar
 }
 
 int main(int argc, char **argv){
@@ -621,8 +623,8 @@ int main(int argc, char **argv){
             //árvore
             flag2 = 1;
             yyparse();
-            if(printtree == 1){
-            print_tree(head, 0);
+            if(printtreeflag == 1){
+            printtree(head, 0);
             }
         }
 
@@ -648,6 +650,6 @@ int main(int argc, char **argv){
 
 
 void yyerror(char *msg) {
-    printtree = 0;
+    printtreeflag = 0;
     printf("Line %d, col %d: %s: %s\n", linha , (int)(coluna-strlen(yytext)) , msg , yytext);
 }

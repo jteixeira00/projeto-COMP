@@ -1,1 +1,8 @@
-Line 2, col 8: syntax error: )
+Program
+..FuncDefinition
+....Int
+....Id(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
