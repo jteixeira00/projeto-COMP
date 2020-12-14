@@ -25,6 +25,23 @@
     
     void yyerror (char *s);
   
+    typedef struct ntf* nodetf;
+    typedef struct nodetf{
+        char* type;
+        char* name;
+        int params;
+        nodetf next;
+    }nodetf;
+
+    typedef struct ntg* nodetg;
+    typedef stuct nodetg{
+        char* type;
+        char* name;
+        char* params;
+        nodetf nexttf;
+        nodetg next;
+    }nodetg;
+    nodetg globalTable;
     typedef struct node{
         char* type; 
         char* value;
@@ -32,6 +49,7 @@
         struct node *bros;
         struct node *childs[MAX];
         int nchildren;
+        char* anotacao;
     }node;
 
     struct node *head = NULL;
@@ -605,6 +623,74 @@ void printtree(struct node *head, int level){
         printtree(head->childs[j], level + 1);
     }
     free(head); //funçao recursiva, vai libertar cada nó depois de o printar
+}
+
+void startGlobalTable(){
+    globalTable = (nodegt)malloc(sizeof(ntg));
+    globalTable->type = (char*)malloc(30*sizeof(char));
+    globalTable->type = "===== Global Symbol Table =====";
+
+    insertGlobal("int", "putchar","int");
+    insertGlobal("int", "getchar","int");
+    
+}
+
+nodetg insertGlobal(char* name, char* type, char* params){
+    nodetg aux = globalTable;
+
+    while(aux->next!=NULL){
+        if(aux->name != NULL && strcmp(aux->next->name)==0){
+            if(aux->type != NULL && strcmp(aux->next->name)==0){
+                if(aux->params != NULL && strcmp(aux->next->params, params)==0){
+                    return aux->next;
+                }
+                else{
+                    return NULL;
+                }
+            }
+        }
+        aux=aux->next;
+    }
+    nodetg res = (nodetg)malloc(sizeof(nodetg));
+    res->name = name;
+    res->type = type;
+    res->params = params;
+    res->nexttf = NULL;
+    res->next = NULL;
+    return res;
+}
+
+void startFunctionT(nodetg nglobal){
+    
+    char* functH = (char*)malloc(264*sizeof(char));
+    sprintf(functH, "===== Function %s Symbol Table =====");
+    nodetf newN = (nodetf)malloc(sizeof(nodetf));
+    newN->type = (char*)malloc(264*sizeof(char));
+    strcpy(newN->type, functH);
+    nglobal->nexttf = newN;
+}
+
+void insertFunctionT(char* name, char *type, int params, nodetf nodefunc){
+    nodetf aux = nodefunc;
+
+    while(aux->next!=NULL){
+        if (aux->name != NULL && strcmp(aux->next->name, name)==0){
+            return;
+        }
+        aux=aux->next;
+    }
+    aux=nodefunc;
+    while(aux->next!=NULL){
+        aux = aux->next;
+    }
+    nodetf res = (nodetf)mallox(sizeof(nodetf));
+    res->name = name;
+    res->type = type;
+    res->params = params;
+    res->next = NULL;
+    aux->next = res;
+    
+
 }
 
 int main(int argc, char **argv){
