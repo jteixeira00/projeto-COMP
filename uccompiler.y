@@ -25,23 +25,24 @@
     
     void yyerror (char *s);
   
-    typedef struct ntf* nodetf;
+    
     typedef struct nodetf{
         char* type;
         char* name;
         int params;
-        nodetf next;
+        struct nodetf* next;
     }nodetf;
 
-    typedef struct ntg* nodetg;
-    typedef stuct nodetg{
+    typedef struct nodetg{
         char* type;
         char* name;
         char* params;
-        nodetf nexttf;
-        nodetg next;
+        struct nodetf* nexttf;
+        struct nodetg* next;
     }nodetg;
-    nodetg globalTable;
+
+    struct nodetg* globalTable;
+
     typedef struct node{
         char* type; 
         char* value;
@@ -49,7 +50,7 @@
         struct node *bros;
         struct node *childs[MAX];
         int nchildren;
-        char* anotacao;
+        char* nota;
     }node;
 
     struct node *head = NULL;
@@ -625,22 +626,12 @@ void printtree(struct node *head, int level){
     free(head); //funçao recursiva, vai libertar cada nó depois de o printar
 }
 
-void startGlobalTable(){
-    globalTable = (nodegt)malloc(sizeof(ntg));
-    globalTable->type = (char*)malloc(30*sizeof(char));
-    globalTable->type = "===== Global Symbol Table =====";
-
-    insertGlobal("int", "putchar","int");
-    insertGlobal("int", "getchar","int");
-    
-}
-
-nodetg insertGlobal(char* name, char* type, char* params){
-    nodetg aux = globalTable;
+struct nodetg* insertGlobal(char* name, char* type, char* params){
+    struct nodetg* aux = globalTable;
 
     while(aux->next!=NULL){
-        if(aux->name != NULL && strcmp(aux->next->name)==0){
-            if(aux->type != NULL && strcmp(aux->next->name)==0){
+        if(aux->name != NULL && strcmp(aux->next->name, name)==0){
+            if(aux->type != NULL && strcmp(aux->next->type, type)==0){
                 if(aux->params != NULL && strcmp(aux->next->params, params)==0){
                     return aux->next;
                 }
@@ -651,27 +642,41 @@ nodetg insertGlobal(char* name, char* type, char* params){
         }
         aux=aux->next;
     }
-    nodetg res = (nodetg)malloc(sizeof(nodetg));
+    struct nodetg* res = (nodetg*)malloc(sizeof(nodetg));
     res->name = name;
     res->type = type;
     res->params = params;
     res->nexttf = NULL;
     res->next = NULL;
+    aux->next = res;
     return res;
 }
 
-void startFunctionT(nodetg nglobal){
+void startGlobalTable(){
+    globalTable = (nodetg*)malloc(sizeof(nodetg));
+    globalTable->type = (char*)malloc(64*sizeof(char));
+    globalTable->type = "===== Global Symbol Table =====";
     
-    char* functH = (char*)malloc(264*sizeof(char));
-    sprintf(functH, "===== Function %s Symbol Table =====");
-    nodetf newN = (nodetf)malloc(sizeof(nodetf));
-    newN->type = (char*)malloc(264*sizeof(char));
-    strcpy(newN->type, functH);
-    nglobal->nexttf = newN;
+    insertGlobal("putchar", "int", "int");
+    insertGlobal("getchar", "int", "void");
+    
 }
 
-void insertFunctionT(char* name, char *type, int params, nodetf nodefunc){
-    nodetf aux = nodefunc;
+
+void startFunctionT(struct nodetg* nglobal){
+    
+    char* functH = (char*)malloc(256*sizeof(char));
+    sprintf(functH, "===== Function %s Symbol Table =====", nglobal->name);
+    struct nodetf* newN = (nodetf*)malloc(sizeof(nodetf));
+    newN->type = (char*)malloc(264*sizeof(char));
+    strcpy(newN->type, functH);
+    newN->params = 0,
+    nglobal->nexttf = newN;
+    
+}
+
+void insertFunctionT(char* name, char *type, int params, struct nodetf* nodefunc){
+    struct nodetf* aux = nodefunc;
 
     while(aux->next!=NULL){
         if (aux->name != NULL && strcmp(aux->next->name, name)==0){
@@ -683,7 +688,7 @@ void insertFunctionT(char* name, char *type, int params, nodetf nodefunc){
     while(aux->next!=NULL){
         aux = aux->next;
     }
-    nodetf res = (nodetf)mallox(sizeof(nodetf));
+    struct nodetf* res = (nodetf*)malloc(sizeof(nodetf));
     res->name = name;
     res->type = type;
     res->params = params;
@@ -692,6 +697,168 @@ void insertFunctionT(char* name, char *type, int params, nodetf nodefunc){
     
 
 }
+
+char * generateParams(struct node* head){
+
+    char *params = (char*)malloc(512*sizeof(char));
+    struct node* aux = head->childs[0];
+   
+    while(aux!=NULL){
+        if(strlen(params)>0){
+            strcat(params,",");
+        }
+        if(strcmp(aux->childs[0]->type, "Char")==0){
+            strcat(params, "char");
+        }
+        if(strcmp(aux->childs[0]->type, "Int")==0){
+            strcat(params, "int");
+        }
+        if(strcmp(aux->childs[0]->type, "Void")==0){
+            strcat(params, "void");
+        }
+        if(strcmp(aux->childs[0]->type, "Short")==0){
+            strcat(params, "short");
+        }
+        if(strcmp(aux->childs[0]->type, "Double")==0){
+            strcat(params, "double");
+        }
+        aux=aux->bros;
+    }
+    return params;
+}
+void insertFunctionBody(struct node* head, struct nodetg* nodeGlobal){
+    struct node* aux = head;
+    puts(aux->type);
+    if(strcmp(aux->type, "Declaration")==0){
+        char *type = strdup(aux->childs[0]->type);
+        type[0] = type[0]+32;
+        insertFunctionT( aux->childs[1]->value, type, 0, nodeGlobal->nexttf);
+    }
+
+    aux = aux->childs[0];
+    while(aux!=NULL){
+        insertFunctionBody(aux, nodeGlobal);
+        aux=aux->bros;
+    }
+
+}
+
+void declarationCheck(struct node* head){
+    char *value = head->childs[0]->bros->value;
+    char *type = strdup(head->childs[0]->type);
+    type[0]=type[0]+32;
+
+    insertGlobal( value, type, "");
+}
+
+void funcdeclarationCheck(struct node* head){
+    char *value = head->childs[0]->bros->value;
+    char *type = strdup(head->childs[0]->type);
+    type[0]=type[0]+32;
+    //maybe erro
+    insertGlobal( value ,type, generateParams(head->childs[2]));
+
+}
+
+void insertParams(struct node* nodeAST, struct nodetg* nodeGlobal){
+    struct node* aux = nodeAST->childs[0];
+    while(aux!=NULL){
+        char* type = strdup(aux->childs[0]->type);
+        type[0]=type[0]+32;
+        if(aux->childs[0]->bros != NULL){
+            insertFunctionT(aux->childs[1]->value, type,  1, nodeGlobal->nexttf);
+        }
+        aux = aux->bros;
+    }
+
+}
+
+void funcdefinitionCheck(struct node* head){
+    char *value = head->childs[0]->bros->value;
+    char *type = strdup(head->childs[0]->type);
+    type[0]=type[0]+32;
+    //maybe erro
+    struct nodetg* newN = insertGlobal(value,type,  generateParams(head->childs[2]));
+    
+    startFunctionT(newN);
+    insertParams(head->childs[2], newN);
+    insertFunctionBody(head->childs[2], newN);
+
+}
+
+
+
+void generateTables(){
+    struct node* aux = head;
+    while (aux!=NULL){
+        if(strcmp(aux->type, "Program")==0){
+            startGlobalTable();
+
+            aux = aux->childs[0];
+        }
+        else{
+            if(strcmp(aux->type, "Declaration")==0){
+                
+                declarationCheck(aux);
+            }
+            if(strcmp(aux->type, "FuncDeclaration")==0){
+                
+                funcdeclarationCheck(aux);
+            }
+            if(strcmp(aux->type, "FuncDefinition")==0){
+                funcdefinitionCheck(aux);
+            }
+            aux=aux->bros;
+        }
+    }
+
+}
+
+void printfuncTable(struct nodetf* nodeF){
+    struct nodetf* aux = nodeF;
+    while(aux!=NULL){
+        if(aux->name!=NULL){
+            if(aux->params == 0){
+                printf("%s\t%s\n", aux->name, aux->type);
+            }
+            else{
+                printf("%s\t%s\tparam\n", aux->name, aux->type);
+            }
+        }
+        else{
+            printf("%s\n", aux->type);
+        }
+        aux=aux->next;
+    }
+}
+
+void printglobaltable(){
+    struct nodetg* aux = globalTable;
+    while(aux!=NULL){
+        if(aux->name!=NULL){
+            printf("%s\t%s", aux->name, aux->type);
+            
+            if(strcmp(aux->params, "")!=0){
+                printf("(%s)",aux->params);
+            }
+            printf("\n");
+        }
+        else{
+            printf("%s\n",globalTable->type);
+        }
+        aux = aux->next;
+    }
+    aux = globalTable;
+    printf("\n");
+    while(aux!=NULL){
+        if (aux->nexttf != NULL){
+            printfuncTable(aux->nexttf);
+        }
+        aux = aux->next;
+    }
+    
+}
+
 
 int main(int argc, char **argv){
     if (argc > 1){
@@ -718,6 +885,13 @@ int main(int argc, char **argv){
             // erros lex e sintaxe
             flag2 = 1;
             yyparse();
+        }
+        else if(strcmp(argv[1], "-s")==0){
+            flag2 = 1;
+            yyparse();
+            generateTables();
+            printglobaltable();
+            
         }
 
         else{

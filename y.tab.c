@@ -94,13 +94,32 @@
     
     void yyerror (char *s);
   
+    
+    typedef struct nodetf{
+        char* type;
+        char* name;
+        int params;
+        struct nodetf* next;
+    }nodetf;
+
+    typedef struct nodetg{
+        char* type;
+        char* name;
+        char* params;
+        struct nodetf* nexttf;
+        struct nodetg* next;
+    }nodetg;
+
+    struct nodetg* globalTable;
+
     typedef struct node{
         char* type; 
         char* value;
         struct node *dad;
         struct node *bros;
         struct node *childs[MAX];
-        int indexc;
+        int nchildren;
+        char* nota;
     }node;
 
     struct node *head = NULL;
@@ -111,7 +130,7 @@
 
 
 
-#line 115 "y.tab.c"
+#line 134 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -148,7 +167,7 @@
 # define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -245,12 +264,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 75 "uccompiler.y"
+#line 94 "uccompiler.y"
 
     char *str;
     struct node *node;
 
-#line 254 "y.tab.c"
+#line 273 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -629,14 +648,14 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    82,    82,    89,    94,   101,   113,   115,   118,   128,
-     133,   134,   137,   148,   151,   153,   157,   165,   171,   180,
-     186,   190,   195,   206,   217,   223,   248,   252,   255,   258,
-     261,   264,   270,   272,   278,   280,   289,   292,   297,   299,
-     302,   314,   318,   338,   354,   368,   373,   379,   387,   393,
-     400,   406,   412,   418,   424,   430,   436,   442,   448,   454,
-     460,   466,   472,   478,   484,   490,   497,   500,   503,   507,
-     514,   520,   522,   524,   526,   528,   530,   533,   539,   541
+       0,   101,   101,   108,   113,   120,   132,   134,   137,   147,
+     152,   153,   156,   167,   170,   172,   176,   184,   190,   199,
+     205,   209,   214,   225,   236,   242,   267,   271,   274,   277,
+     280,   283,   289,   291,   297,   299,   308,   311,   316,   318,
+     321,   333,   337,   357,   373,   387,   392,   398,   406,   412,
+     419,   425,   431,   437,   443,   449,   455,   461,   467,   473,
+     479,   485,   491,   497,   503,   509,   516,   519,   522,   526,
+     533,   539,   541,   543,   545,   547,   549,   552,   558,   560
 };
 #endif
 
@@ -1599,58 +1618,58 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 82 "uccompiler.y"
+#line 101 "uccompiler.y"
                                                                             {head = createnode("Program","");
 																			addchild(head,(yyvsp[0].node));
                                                                             (yyval.node) = head;}
-#line 1607 "y.tab.c"
+#line 1626 "y.tab.c"
     break;
 
   case 3:
-#line 89 "uccompiler.y"
+#line 108 "uccompiler.y"
                                                                             {if((yyvsp[0].node)!=NULL){
                                                                                 addbro((yyvsp[-1].node), (yyvsp[0].node));
                                                                                 }
                                                                             (yyval.node) = (yyvsp[-1].node);}
-#line 1616 "y.tab.c"
+#line 1635 "y.tab.c"
     break;
 
   case 4:
-#line 94 "uccompiler.y"
+#line 113 "uccompiler.y"
                                                                                {
                                                                             if((yyvsp[0].node)!=NULL){
                                                                                 addbro((yyvsp[-1].node), (yyvsp[0].node));
                                                                                 }
                                                                             (yyval.node) = (yyvsp[-1].node);
                                                                             }
-#line 1627 "y.tab.c"
+#line 1646 "y.tab.c"
     break;
 
   case 5:
-#line 101 "uccompiler.y"
+#line 120 "uccompiler.y"
                                                                              {
                                                                             if((yyvsp[0].node)!=NULL){
                                                                                 addbro((yyvsp[-1].node), (yyvsp[0].node));
                                                                                 }
                                                                             (yyval.node) = (yyvsp[-1].node);
                                                                             }
-#line 1638 "y.tab.c"
+#line 1657 "y.tab.c"
     break;
 
   case 6:
-#line 113 "uccompiler.y"
+#line 132 "uccompiler.y"
                                                                             {(yyval.node)=(yyvsp[0].node);}
-#line 1644 "y.tab.c"
+#line 1663 "y.tab.c"
     break;
 
   case 7:
-#line 115 "uccompiler.y"
+#line 134 "uccompiler.y"
                                                                             {(yyval.node)=NULL;}
-#line 1650 "y.tab.c"
+#line 1669 "y.tab.c"
     break;
 
   case 8:
-#line 118 "uccompiler.y"
+#line 137 "uccompiler.y"
                                                                             {struct node *functiondef = createnode("FuncDefinition", "");
                                                                            
                                                                             addchild(functiondef, (yyvsp[-2].node));
@@ -1659,31 +1678,31 @@ yyreduce:
                                                                             addbro((yyvsp[-2].node), (yyvsp[-1].node));
                                                                             addbro((yyvsp[-1].node), (yyvsp[0].node));
                                                                             (yyval.node) = functiondef;}
-#line 1663 "y.tab.c"
+#line 1682 "y.tab.c"
     break;
 
   case 9:
-#line 128 "uccompiler.y"
+#line 147 "uccompiler.y"
                                                                             {struct node *funcbody = createnode("FuncBody", "");
                                                                             addchild(funcbody, (yyvsp[-1].node));
                                                                             (yyval.node) = funcbody;}
-#line 1671 "y.tab.c"
+#line 1690 "y.tab.c"
     break;
 
   case 10:
-#line 133 "uccompiler.y"
+#line 152 "uccompiler.y"
                                                                             {(yyval.node)=(yyvsp[0].node);}
-#line 1677 "y.tab.c"
+#line 1696 "y.tab.c"
     break;
 
   case 11:
-#line 134 "uccompiler.y"
+#line 153 "uccompiler.y"
                                                                             {(yyval.node) = NULL;}
-#line 1683 "y.tab.c"
+#line 1702 "y.tab.c"
     break;
 
   case 12:
-#line 137 "uccompiler.y"
+#line 156 "uccompiler.y"
                                                                             {
                                                                             if((yyvsp[-1].node) != NULL){
                                                                                 addbro((yyvsp[-1].node),(yyvsp[0].node));
@@ -1694,49 +1713,49 @@ yyreduce:
                                                                             
                                                                             
                                                                             }
-#line 1698 "y.tab.c"
-    break;
-
-  case 13:
-#line 148 "uccompiler.y"
-                                                                            {addbro((yyvsp[-1].node), (yyvsp[0].node));
-                                                                            (yyval.node)=(yyvsp[-1].node);}
-#line 1705 "y.tab.c"
-    break;
-
-  case 14:
-#line 151 "uccompiler.y"
-                                                                            {(yyval.node) = (yyvsp[0].node);}
-#line 1711 "y.tab.c"
-    break;
-
-  case 15:
-#line 153 "uccompiler.y"
-                                                                            {(yyval.node) = (yyvsp[0].node);}
 #line 1717 "y.tab.c"
     break;
 
+  case 13:
+#line 167 "uccompiler.y"
+                                                                            {addbro((yyvsp[-1].node), (yyvsp[0].node));
+                                                                            (yyval.node)=(yyvsp[-1].node);}
+#line 1724 "y.tab.c"
+    break;
+
+  case 14:
+#line 170 "uccompiler.y"
+                                                                            {(yyval.node) = (yyvsp[0].node);}
+#line 1730 "y.tab.c"
+    break;
+
+  case 15:
+#line 172 "uccompiler.y"
+                                                                            {(yyval.node) = (yyvsp[0].node);}
+#line 1736 "y.tab.c"
+    break;
+
   case 16:
-#line 157 "uccompiler.y"
+#line 176 "uccompiler.y"
                                                                             {struct node *funcdeclaration = createnode("FuncDeclaration", "");
                                                                             addchild(funcdeclaration, (yyvsp[-2].node));
                                                                             addchild(funcdeclaration, (yyvsp[-1].node));
                                                                             addbro((yyvsp[-2].node), (yyvsp[-1].node));
                                                                             (yyval.node) = funcdeclaration;}
-#line 1727 "y.tab.c"
+#line 1746 "y.tab.c"
     break;
 
   case 17:
-#line 165 "uccompiler.y"
+#line 184 "uccompiler.y"
                                                                             {struct node *id1 = createnode("Id",(yyvsp[-3].str));
                                                                             addbro(id1, (yyvsp[-1].node));
                                                                             (yyval.node) = id1;
                                                                             }
-#line 1736 "y.tab.c"
+#line 1755 "y.tab.c"
     break;
 
   case 18:
-#line 171 "uccompiler.y"
+#line 190 "uccompiler.y"
                                                                             {struct node *paramlist = createnode("ParamList", "");
                                                                             addchild(paramlist, (yyvsp[-1].node));
                                                                             if((yyvsp[0].node)!=NULL){
@@ -1744,37 +1763,37 @@ yyreduce:
                                                                                 addbro((yyvsp[-1].node), (yyvsp[0].node));}
                                                                             (yyval.node)=paramlist;
                                                                             }
-#line 1748 "y.tab.c"
+#line 1767 "y.tab.c"
     break;
 
   case 19:
-#line 180 "uccompiler.y"
+#line 199 "uccompiler.y"
                                                                             {
                                                                             if((yyvsp[0].node)!=NULL){
                                                                                 addbro((yyvsp[-1].node),(yyvsp[0].node));
                                                                                 }
                                                                             (yyval.node) = (yyvsp[-1].node);
                                                                             }
-#line 1759 "y.tab.c"
+#line 1778 "y.tab.c"
     break;
 
   case 20:
-#line 186 "uccompiler.y"
+#line 205 "uccompiler.y"
                                                                             {(yyval.node) = NULL;}
-#line 1765 "y.tab.c"
+#line 1784 "y.tab.c"
     break;
 
   case 21:
-#line 190 "uccompiler.y"
+#line 209 "uccompiler.y"
                                                                             {struct node *paramdeclaration = createnode("ParamDeclaration", "");
                                                                             addchild(paramdeclaration, (yyvsp[0].node));
                                                                             (yyval.node) = paramdeclaration;
                                                                             }
-#line 1774 "y.tab.c"
+#line 1793 "y.tab.c"
     break;
 
   case 22:
-#line 195 "uccompiler.y"
+#line 214 "uccompiler.y"
                                                                             {struct node *paramdeclaration = createnode("ParamDeclaration", "");
                                                                             addchild(paramdeclaration, (yyvsp[-1].node));
                                                                             struct node *id1 = createnode("Id", (yyvsp[0].str));
@@ -1782,11 +1801,11 @@ yyreduce:
                                                                             addbro((yyvsp[-1].node), id1);
                                                                             
                                                                             (yyval.node) = paramdeclaration;}
-#line 1786 "y.tab.c"
+#line 1805 "y.tab.c"
     break;
 
   case 23:
-#line 206 "uccompiler.y"
+#line 225 "uccompiler.y"
                                                                             {struct node *declaration = createnode("Declaration","");                                                                            
                                                                             addchild(declaration, (yyvsp[-3].node));
                                                                             addchild(declaration, (yyvsp[-2].node));
@@ -1796,18 +1815,18 @@ yyreduce:
                                                                                 }
 
                                                                             (yyval.node) = declaration;}
-#line 1800 "y.tab.c"
+#line 1819 "y.tab.c"
     break;
 
   case 24:
-#line 217 "uccompiler.y"
+#line 236 "uccompiler.y"
                                                                             {struct node *null = createnode("Null","");
                                                                             (yyval.node) = null;}
-#line 1807 "y.tab.c"
+#line 1826 "y.tab.c"
     break;
 
   case 25:
-#line 223 "uccompiler.y"
+#line 242 "uccompiler.y"
                                                                             {struct node *declaration = createnode("Declaration", "");
                                                                             if(type == 0){
                                                                                 addchild(declaration,createnode("Char",""));                                                                                
@@ -1833,107 +1852,107 @@ yyreduce:
                                                                                 }
                                                                             (yyval.node) = declaration;
                                                                             }
-#line 1837 "y.tab.c"
+#line 1856 "y.tab.c"
     break;
 
   case 26:
-#line 248 "uccompiler.y"
+#line 267 "uccompiler.y"
                                                                             {(yyval.node) = NULL;}
-#line 1843 "y.tab.c"
+#line 1862 "y.tab.c"
     break;
 
   case 27:
-#line 252 "uccompiler.y"
+#line 271 "uccompiler.y"
                                                                             {(yyval.node) = createnode("Char","");
                                                                             type = 0;}
-#line 1850 "y.tab.c"
+#line 1869 "y.tab.c"
     break;
 
   case 28:
-#line 255 "uccompiler.y"
+#line 274 "uccompiler.y"
                                                                             {(yyval.node) = createnode("Int","");
                                                                             type = 1;}
-#line 1857 "y.tab.c"
+#line 1876 "y.tab.c"
     break;
 
   case 29:
-#line 258 "uccompiler.y"
+#line 277 "uccompiler.y"
                                                                             {(yyval.node) = createnode("Void","");
                                                                             type = 2;}
-#line 1864 "y.tab.c"
+#line 1883 "y.tab.c"
     break;
 
   case 30:
-#line 261 "uccompiler.y"
+#line 280 "uccompiler.y"
                                                                             {(yyval.node) = createnode("Short","");
                                                                             type = 3;}
-#line 1871 "y.tab.c"
+#line 1890 "y.tab.c"
     break;
 
   case 31:
-#line 264 "uccompiler.y"
+#line 283 "uccompiler.y"
                                                                             {(yyval.node) = createnode("Double","");
                                                                             type = 4;}
-#line 1878 "y.tab.c"
+#line 1897 "y.tab.c"
     break;
 
   case 32:
-#line 270 "uccompiler.y"
+#line 289 "uccompiler.y"
                                                                                 {(yyval.node) = createnode("Id", (yyvsp[0].str));}
-#line 1884 "y.tab.c"
+#line 1903 "y.tab.c"
     break;
 
   case 33:
-#line 272 "uccompiler.y"
+#line 291 "uccompiler.y"
                                                                                 {struct node *id1 = createnode("Id", (yyvsp[-2].str));
                                                                                 addbro(id1, (yyvsp[0].node));
                                                                                 (yyval.node) = id1;}
-#line 1892 "y.tab.c"
+#line 1911 "y.tab.c"
     break;
 
   case 34:
-#line 278 "uccompiler.y"
+#line 297 "uccompiler.y"
                                                                                 {(yyval.node) = (yyvsp[0].node);}
-#line 1898 "y.tab.c"
+#line 1917 "y.tab.c"
     break;
 
   case 35:
-#line 280 "uccompiler.y"
+#line 299 "uccompiler.y"
                                                                                 {addbro((yyvsp[-1].node), (yyvsp[0].node)); 
                                                                                 if((yyvsp[-1].node)!=NULL){
                                                                                     (yyval.node) = (yyvsp[-1].node);
                                                                                 }
                                                                                 else{
                                                                                     (yyval.node) = (yyvsp[0].node);}}
-#line 1909 "y.tab.c"
+#line 1928 "y.tab.c"
     break;
 
   case 36:
-#line 289 "uccompiler.y"
+#line 308 "uccompiler.y"
                                                                                 {(yyval.node)=(yyvsp[0].node);}
-#line 1915 "y.tab.c"
+#line 1934 "y.tab.c"
     break;
 
   case 37:
-#line 292 "uccompiler.y"
+#line 311 "uccompiler.y"
                                                                                 {struct node *null = createnode("Null", ""); (yyval.node)=null;}
-#line 1921 "y.tab.c"
+#line 1940 "y.tab.c"
     break;
 
   case 38:
-#line 297 "uccompiler.y"
+#line 316 "uccompiler.y"
                                                                                 {(yyval.node) = NULL;}
-#line 1927 "y.tab.c"
+#line 1946 "y.tab.c"
     break;
 
   case 39:
-#line 299 "uccompiler.y"
+#line 318 "uccompiler.y"
                                                                                 {(yyval.node) = (yyvsp[-1].node);}
-#line 1933 "y.tab.c"
+#line 1952 "y.tab.c"
     break;
 
   case 40:
-#line 302 "uccompiler.y"
+#line 321 "uccompiler.y"
                                                                                 {if((yyvsp[-1].node)!=NULL && (yyvsp[-1].node)->bros != NULL){
                                                                                 struct node *statlist = createnode("StatList", "");
                                                                                 addchild(statlist, (yyvsp[-1].node));
@@ -1945,19 +1964,19 @@ yyreduce:
                                                                                 }
                                                                                 else{(yyval.node) = NULL;}
                                                                                 }
-#line 1949 "y.tab.c"
+#line 1968 "y.tab.c"
     break;
 
   case 41:
-#line 314 "uccompiler.y"
+#line 333 "uccompiler.y"
                                                                                 {
                                                                                 //struct node *null = createnode("Null", ""); $$=null;
                                                                                 (yyval.node)=NULL;}
-#line 1957 "y.tab.c"
+#line 1976 "y.tab.c"
     break;
 
   case 42:
-#line 318 "uccompiler.y"
+#line 337 "uccompiler.y"
                                                                                     {struct node *if1 = createnode("If","");
                                                                                     addchild(if1, (yyvsp[-2].node));
                                                                                     if((yyvsp[0].node) == NULL){
@@ -1976,11 +1995,11 @@ yyreduce:
                                                                                     addbro((yyvsp[0].node), null1);
                                                                                     }
                                                                                     (yyval.node) = if1;}
-#line 1980 "y.tab.c"
+#line 1999 "y.tab.c"
     break;
 
   case 43:
-#line 338 "uccompiler.y"
+#line 357 "uccompiler.y"
                                                                                         {struct node *if2 = createnode("If", "");
 
                                                                                         addchild(if2, (yyvsp[-4].node));
@@ -1995,11 +2014,11 @@ yyreduce:
                                                                                         addbro(if2->childs[1], if2->childs[2]);
                                                                                 
                                                                                         (yyval.node) = if2;}
-#line 1999 "y.tab.c"
+#line 2018 "y.tab.c"
     break;
 
   case 44:
-#line 354 "uccompiler.y"
+#line 373 "uccompiler.y"
                                                                                 {struct node *while1 = createnode("While", "");
                                                                                 addchild(while1, (yyvsp[-2].node));
                                                                                 if((yyvsp[0].node) == NULL){
@@ -2012,313 +2031,313 @@ yyreduce:
                                                                                     addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                     }
                                                                                 (yyval.node) = while1;}
-#line 2016 "y.tab.c"
+#line 2035 "y.tab.c"
     break;
 
   case 45:
-#line 368 "uccompiler.y"
+#line 387 "uccompiler.y"
                                                                                 {struct node *return1 = createnode("Return", "");
                                                                                 struct node *null = createnode("Null","");
                                                                                 addchild(return1, null);
                                                                                 (yyval.node)=return1;}
-#line 2025 "y.tab.c"
+#line 2044 "y.tab.c"
     break;
 
   case 46:
-#line 373 "uccompiler.y"
+#line 392 "uccompiler.y"
                                                                                                                                 {struct node *return1 = createnode("Return","");
 																				addchild(return1, (yyvsp[-1].node));
                                                                                 (yyval.node)=return1;}
-#line 2033 "y.tab.c"
+#line 2052 "y.tab.c"
     break;
 
   case 47:
-#line 379 "uccompiler.y"
+#line 398 "uccompiler.y"
                                                                                 {struct node *null = createnode("Null","");
                                                                                 (yyval.node) = null;}
-#line 2040 "y.tab.c"
+#line 2059 "y.tab.c"
     break;
 
   case 48:
-#line 387 "uccompiler.y"
+#line 406 "uccompiler.y"
                                                                                 {struct node *store = createnode("Store","");
                                                                                 addchild(store, (yyvsp[-2].node));
                                                                                 addchild(store, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = store;}
-#line 2050 "y.tab.c"
+#line 2069 "y.tab.c"
     break;
 
   case 49:
-#line 393 "uccompiler.y"
+#line 412 "uccompiler.y"
                                                                                 {struct node *comma = createnode("Comma","");
                                                                                 addchild(comma, (yyvsp[-2].node));
                                                                                 addchild(comma, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = comma;}
-#line 2060 "y.tab.c"
+#line 2079 "y.tab.c"
     break;
 
   case 50:
-#line 400 "uccompiler.y"
+#line 419 "uccompiler.y"
                                                                                 {struct node *add = createnode("Add","");
                                                                                 addchild(add, (yyvsp[-2].node));
                                                                                 addchild(add, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = add;}
-#line 2070 "y.tab.c"
+#line 2089 "y.tab.c"
     break;
 
   case 51:
-#line 406 "uccompiler.y"
+#line 425 "uccompiler.y"
                                                                                 {struct node *sub = createnode("Sub","");
                                                                                 addchild(sub, (yyvsp[-2].node));
                                                                                 addchild(sub, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = sub;}
-#line 2080 "y.tab.c"
+#line 2099 "y.tab.c"
     break;
 
   case 52:
-#line 412 "uccompiler.y"
+#line 431 "uccompiler.y"
                                                                                 {struct node *mul = createnode("Mul","");
                                                                                 addchild(mul, (yyvsp[-2].node));
                                                                                 addchild(mul, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = mul;}
-#line 2090 "y.tab.c"
+#line 2109 "y.tab.c"
     break;
 
   case 53:
-#line 418 "uccompiler.y"
+#line 437 "uccompiler.y"
                                                                                 {struct node *div = createnode("Div","");
                                                                                 addchild(div, (yyvsp[-2].node));
                                                                                 addchild(div, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = div;}
-#line 2100 "y.tab.c"
+#line 2119 "y.tab.c"
     break;
 
   case 54:
-#line 424 "uccompiler.y"
+#line 443 "uccompiler.y"
                                                                                 {struct node *mod = createnode("Mod","");
                                                                                 addchild(mod, (yyvsp[-2].node));
                                                                                 addchild(mod, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = mod;}
-#line 2110 "y.tab.c"
+#line 2129 "y.tab.c"
     break;
 
   case 55:
-#line 430 "uccompiler.y"
+#line 449 "uccompiler.y"
                                                                                 {struct node *or = createnode("Or","");
                                                                                 addchild(or, (yyvsp[-2].node));
                                                                                 addchild(or, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = or;}
-#line 2120 "y.tab.c"
+#line 2139 "y.tab.c"
     break;
 
   case 56:
-#line 436 "uccompiler.y"
+#line 455 "uccompiler.y"
                                                                                 {struct node *and = createnode("And","");
                                                                                 addchild(and, (yyvsp[-2].node));
                                                                                 addchild(and, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = and;}
-#line 2130 "y.tab.c"
+#line 2149 "y.tab.c"
     break;
 
   case 57:
-#line 442 "uccompiler.y"
+#line 461 "uccompiler.y"
                                                                                 {struct node *bitewiseand = createnode("BitWiseAnd","");
                                                                                 addchild(bitewiseand, (yyvsp[-2].node));
                                                                                 addchild(bitewiseand, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = bitewiseand;}
-#line 2140 "y.tab.c"
+#line 2159 "y.tab.c"
     break;
 
   case 58:
-#line 448 "uccompiler.y"
+#line 467 "uccompiler.y"
                                                                                 {struct node *bitewiseor = createnode("BitWiseOr","");
                                                                                 addchild(bitewiseor, (yyvsp[-2].node));
                                                                                 addchild(bitewiseor, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = bitewiseor;}
-#line 2150 "y.tab.c"
+#line 2169 "y.tab.c"
     break;
 
   case 59:
-#line 454 "uccompiler.y"
+#line 473 "uccompiler.y"
                                                                                 {struct node *bitewisexor = createnode("BitWiseXor","");
                                                                                 addchild(bitewisexor, (yyvsp[-2].node));
                                                                                 addchild(bitewisexor, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = bitewisexor;}
-#line 2160 "y.tab.c"
+#line 2179 "y.tab.c"
     break;
 
   case 60:
-#line 460 "uccompiler.y"
+#line 479 "uccompiler.y"
                                                                                 {struct node *eq = createnode("Eq","");
                                                                                 addchild(eq, (yyvsp[-2].node));
                                                                                 addchild(eq, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = eq;}
-#line 2170 "y.tab.c"
+#line 2189 "y.tab.c"
     break;
 
   case 61:
-#line 466 "uccompiler.y"
+#line 485 "uccompiler.y"
                                                                                 {struct node *ne = createnode("Ne","");
                                                                                 addchild(ne, (yyvsp[-2].node));
                                                                                 addchild(ne, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = ne;}
-#line 2180 "y.tab.c"
+#line 2199 "y.tab.c"
     break;
 
   case 62:
-#line 472 "uccompiler.y"
+#line 491 "uccompiler.y"
                                                                                 {struct node *le = createnode("Le","");
                                                                                 addchild(le, (yyvsp[-2].node));
                                                                                 addchild(le, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = le;}
-#line 2190 "y.tab.c"
+#line 2209 "y.tab.c"
     break;
 
   case 63:
-#line 478 "uccompiler.y"
+#line 497 "uccompiler.y"
                                                                                 {struct node *ge = createnode("Ge","");
                                                                                 addchild(ge, (yyvsp[-2].node));
                                                                                 addchild(ge, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = ge;}
-#line 2200 "y.tab.c"
+#line 2219 "y.tab.c"
     break;
 
   case 64:
-#line 484 "uccompiler.y"
+#line 503 "uccompiler.y"
                                                                                 {struct node *lt = createnode("Lt","");
                                                                                 addchild(lt, (yyvsp[-2].node));
                                                                                 addchild(lt, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = lt;}
-#line 2210 "y.tab.c"
+#line 2229 "y.tab.c"
     break;
 
   case 65:
-#line 490 "uccompiler.y"
+#line 509 "uccompiler.y"
                                                                                 {struct node *gt = createnode("Gt","");
                                                                                 addchild(gt, (yyvsp[-2].node));
                                                                                 addchild(gt, (yyvsp[0].node));
                                                                                 addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                 (yyval.node) = gt;}
-#line 2220 "y.tab.c"
+#line 2239 "y.tab.c"
     break;
 
   case 66:
-#line 497 "uccompiler.y"
+#line 516 "uccompiler.y"
                                                                                 {struct node *plus = createnode("Plus","");
                                                                                 (yyval.node) = addchild(plus,(yyvsp[0].node));}
-#line 2227 "y.tab.c"
+#line 2246 "y.tab.c"
     break;
 
   case 67:
-#line 500 "uccompiler.y"
+#line 519 "uccompiler.y"
                                                                                 {struct node *minus = createnode("Minus","");
                                                                                 (yyval.node) = addchild(minus,(yyvsp[0].node));}
-#line 2234 "y.tab.c"
+#line 2253 "y.tab.c"
     break;
 
   case 68:
-#line 503 "uccompiler.y"
+#line 522 "uccompiler.y"
                                                                                 {struct node *not = createnode("Not","");
                                                                                 (yyval.node) = addchild(not,(yyvsp[0].node));}
-#line 2241 "y.tab.c"
+#line 2260 "y.tab.c"
     break;
 
   case 69:
-#line 507 "uccompiler.y"
+#line 526 "uccompiler.y"
                                                                                 {struct node *id1 = createnode("Id",(yyvsp[-3].str));
                                                                                 struct node *call = createnode("Call","");
                                                                                 addchild(call, id1);
                                                                                 addchild(call, (yyvsp[-1].node));
                                                                                 addbro(id1, (yyvsp[-1].node)); 
                                                                                 (yyval.node) = call;}
-#line 2252 "y.tab.c"
+#line 2271 "y.tab.c"
     break;
 
   case 70:
-#line 514 "uccompiler.y"
+#line 533 "uccompiler.y"
                                                                                 {struct node *id1 = createnode("Id",(yyvsp[-2].str));
                                                                                 struct node *call = createnode("Call","");
                                                                                 addchild(call, id1);
                                                                                 (yyval.node) = call;}
-#line 2261 "y.tab.c"
+#line 2280 "y.tab.c"
     break;
 
   case 71:
-#line 520 "uccompiler.y"
+#line 539 "uccompiler.y"
                                                                                 {(yyval.node) = createnode("Id", (yyvsp[0].str));}
-#line 2267 "y.tab.c"
+#line 2286 "y.tab.c"
     break;
 
   case 72:
-#line 522 "uccompiler.y"
+#line 541 "uccompiler.y"
                                                                                 {(yyval.node) = createnode("IntLit", (yyvsp[0].str));}
-#line 2273 "y.tab.c"
+#line 2292 "y.tab.c"
     break;
 
   case 73:
-#line 524 "uccompiler.y"
+#line 543 "uccompiler.y"
                                                                                 {(yyval.node) = createnode("ChrLit", (yyvsp[0].str));}
-#line 2279 "y.tab.c"
-    break;
-
-  case 74:
-#line 526 "uccompiler.y"
-                                                                                {(yyval.node) = createnode("RealLit", (yyvsp[0].str));}
-#line 2285 "y.tab.c"
-    break;
-
-  case 75:
-#line 528 "uccompiler.y"
-                                                                                {(yyval.node) = (yyvsp[-1].node);}
-#line 2291 "y.tab.c"
-    break;
-
-  case 76:
-#line 530 "uccompiler.y"
-                                                                                {struct node *null = createnode("Null","");
-                                                                                 (yyval.node) = null;}
 #line 2298 "y.tab.c"
     break;
 
-  case 77:
-#line 533 "uccompiler.y"
+  case 74:
+#line 545 "uccompiler.y"
+                                                                                {(yyval.node) = createnode("RealLit", (yyvsp[0].str));}
+#line 2304 "y.tab.c"
+    break;
+
+  case 75:
+#line 547 "uccompiler.y"
+                                                                                {(yyval.node) = (yyvsp[-1].node);}
+#line 2310 "y.tab.c"
+    break;
+
+  case 76:
+#line 549 "uccompiler.y"
                                                                                 {struct node *null = createnode("Null","");
                                                                                  (yyval.node) = null;}
-#line 2305 "y.tab.c"
+#line 2317 "y.tab.c"
+    break;
+
+  case 77:
+#line 552 "uccompiler.y"
+                                                                                {struct node *null = createnode("Null","");
+                                                                                 (yyval.node) = null;}
+#line 2324 "y.tab.c"
     break;
 
   case 78:
-#line 539 "uccompiler.y"
+#line 558 "uccompiler.y"
                                                                                 {addbro((yyvsp[-2].node), (yyvsp[0].node));
                                                                                  (yyval.node) = (yyvsp[-2].node);}
-#line 2312 "y.tab.c"
+#line 2331 "y.tab.c"
     break;
 
   case 79:
-#line 541 "uccompiler.y"
+#line 560 "uccompiler.y"
                                                                                 {(yyval.node) = (yyvsp[0].node);}
-#line 2318 "y.tab.c"
+#line 2337 "y.tab.c"
     break;
 
 
-#line 2322 "y.tab.c"
+#line 2341 "y.tab.c"
 
       default: break;
     }
@@ -2550,7 +2569,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 546 "uccompiler.y"
+#line 565 "uccompiler.y"
 
 struct node* createnode(char *type, char *value){
     node *new = (node *)malloc(sizeof(node));
@@ -2559,7 +2578,7 @@ struct node* createnode(char *type, char *value){
     }
     new->type = type;
     new->value = value;
-    new->indexc = 0;
+    new->nchildren = 0;
     new->dad = NULL;
     new->bros = NULL;
     return new;
@@ -2569,14 +2588,14 @@ struct node* addchild(struct node* dad, struct node* child){
     if (dad == NULL || child == NULL){
        return NULL;
     }
-    dad->childs[dad->indexc] = child;
-    dad->indexc++;
+    dad->childs[dad->nchildren] = child;
+    dad->nchildren++;
     child->dad = dad;
     node *aux = child->bros;
     while (aux != NULL){
         aux->dad = dad;
-        dad->childs[dad->indexc] = aux;
-        dad->indexc++;
+        dad->childs[dad->nchildren] = aux;
+        dad->nchildren++;
         aux = aux->bros;
     }
 
@@ -2595,23 +2614,259 @@ struct node *addbro(struct node* n1, struct node* n2){
 }
 
 void printtree(struct node *head, int level){
+    int currentlevel=0;
     if (head == NULL){
         return;
     }
-    for (int i = 0; i < level; i++){
+    while (currentlevel++<level){
         printf("..");
     }
-    if (strcmp(head->value, "") == 0){
-        printf("%s\n", head->type);
+    if (strcmp(head->value, "") != 0){
+         printf("%s(%s)\n", head->type, head->value);
+        
     }
     else{
-        printf("%s(%s)\n", head->type, head->value);
+       printf("%s\n", head->type);
     }
-    for (int j = 0; j < head->indexc; j++){
+    for (int j = 0; j < head->nchildren; j++){
         printtree(head->childs[j], level + 1);
     }
     free(head); //funçao recursiva, vai libertar cada nó depois de o printar
 }
+
+struct nodetg* insertGlobal(char* name, char* type, char* params){
+    struct nodetg* aux = globalTable;
+
+    while(aux->next!=NULL){
+        if(aux->name != NULL && strcmp(aux->next->name, name)==0){
+            if(aux->type != NULL && strcmp(aux->next->type, type)==0){
+                if(aux->params != NULL && strcmp(aux->next->params, params)==0){
+                    return aux->next;
+                }
+                else{
+                    return NULL;
+                }
+            }
+        }
+        aux=aux->next;
+    }
+    struct nodetg* res = (nodetg*)malloc(sizeof(nodetg));
+    res->name = name;
+    res->type = type;
+    res->params = params;
+    res->nexttf = NULL;
+    res->next = NULL;
+    aux->next = res;
+    return res;
+}
+
+void startGlobalTable(){
+    globalTable = (nodetg*)malloc(sizeof(nodetg));
+    globalTable->type = (char*)malloc(64*sizeof(char));
+    globalTable->type = "===== Global Symbol Table =====";
+    
+    insertGlobal("putchar", "int", "int");
+    insertGlobal("getchar", "int", "void");
+    
+}
+
+
+void startFunctionT(struct nodetg* nglobal){
+    
+    char* functH = (char*)malloc(256*sizeof(char));
+    sprintf(functH, "===== Function %s Symbol Table =====", nglobal->name);
+    struct nodetf* newN = (nodetf*)malloc(sizeof(nodetf));
+    newN->type = (char*)malloc(264*sizeof(char));
+    strcpy(newN->type, functH);
+    newN->params = 0,
+    nglobal->nexttf = newN;
+    
+}
+
+void insertFunctionT(char* name, char *type, int params, struct nodetf* nodefunc){
+    struct nodetf* aux = nodefunc;
+
+    while(aux->next!=NULL){
+        if (aux->name != NULL && strcmp(aux->next->name, name)==0){
+            return;
+        }
+        aux=aux->next;
+    }
+    aux=nodefunc;
+    while(aux->next!=NULL){
+        aux = aux->next;
+    }
+    struct nodetf* res = (nodetf*)malloc(sizeof(nodetf));
+    res->name = name;
+    res->type = type;
+    res->params = params;
+    res->next = NULL;
+    aux->next = res;
+    
+
+}
+
+char * generateParams(struct node* head){
+
+    char *params = (char*)malloc(512*sizeof(char));
+    struct node* aux = head->childs[0];
+   
+    while(aux!=NULL){
+        if(strlen(params)>0){
+            strcat(params,",");
+        }
+        if(strcmp(aux->childs[0]->type, "Char")==0){
+            strcat(params, "char");
+        }
+        if(strcmp(aux->childs[0]->type, "Int")==0){
+            strcat(params, "int");
+        }
+        if(strcmp(aux->childs[0]->type, "Void")==0){
+            strcat(params, "void");
+        }
+        if(strcmp(aux->childs[0]->type, "Short")==0){
+            strcat(params, "short");
+        }
+        if(strcmp(aux->childs[0]->type, "Double")==0){
+            strcat(params, "double");
+        }
+        aux=aux->bros;
+    }
+    return params;
+}
+void insertFunctionBody(struct node* head, struct nodetg* nodeGlobal){
+    struct node* aux = head;
+    puts(aux->type);
+    if(strcmp(aux->type, "Declaration")==0){
+        char *type = strdup(aux->childs[0]->type);
+        type[0] = type[0]+32;
+        insertFunctionT( aux->childs[1]->value, type, 0, nodeGlobal->nexttf);
+    }
+
+    aux = aux->childs[0];
+    while(aux!=NULL){
+        insertFunctionBody(aux, nodeGlobal);
+        aux=aux->bros;
+    }
+
+}
+
+void declarationCheck(struct node* head){
+    char *value = head->childs[0]->bros->value;
+    char *type = strdup(head->childs[0]->type);
+    type[0]=type[0]+32;
+
+    insertGlobal( value, type, "");
+}
+
+void funcdeclarationCheck(struct node* head){
+    char *value = head->childs[0]->bros->value;
+    char *type = strdup(head->childs[0]->type);
+    type[0]=type[0]+32;
+    //maybe erro
+    insertGlobal( value ,type, generateParams(head->childs[2]));
+
+}
+
+void insertParams(struct node* nodeAST, struct nodetg* nodeGlobal){
+    struct node* aux = nodeAST->childs[0];
+    while(aux!=NULL){
+        char* type = strdup(aux->childs[0]->type);
+        type[0]=type[0]+32;
+        if(aux->childs[0]->bros != NULL){
+            insertFunctionT(aux->childs[1]->value, type,  1, nodeGlobal->nexttf);
+        }
+        aux = aux->bros;
+    }
+
+}
+
+void funcdefinitionCheck(struct node* head){
+    char *value = head->childs[0]->bros->value;
+    char *type = strdup(head->childs[0]->type);
+    type[0]=type[0]+32;
+    //maybe erro
+    struct nodetg* newN = insertGlobal(value,type,  generateParams(head->childs[2]));
+    
+    startFunctionT(newN);
+    insertParams(head->childs[2], newN);
+    insertFunctionBody(head->childs[2], newN);
+
+}
+
+
+
+void generateTables(){
+    struct node* aux = head;
+    while (aux!=NULL){
+        if(strcmp(aux->type, "Program")==0){
+            startGlobalTable();
+
+            aux = aux->childs[0];
+        }
+        else{
+            if(strcmp(aux->type, "Declaration")==0){
+                
+                declarationCheck(aux);
+            }
+            if(strcmp(aux->type, "FuncDeclaration")==0){
+                
+                funcdeclarationCheck(aux);
+            }
+            if(strcmp(aux->type, "FuncDefinition")==0){
+                funcdefinitionCheck(aux);
+            }
+            aux=aux->bros;
+        }
+    }
+
+}
+
+void printfuncTable(struct nodetf* nodeF){
+    struct nodetf* aux = nodeF;
+    while(aux!=NULL){
+        if(aux->name!=NULL){
+            if(aux->params == 0){
+                printf("%s\t%s\n", aux->name, aux->type);
+            }
+            else{
+                printf("%s\t%s\tparam\n", aux->name, aux->type);
+            }
+        }
+        else{
+            printf("%s\n", aux->type);
+        }
+        aux=aux->next;
+    }
+}
+
+void printglobaltable(){
+    struct nodetg* aux = globalTable;
+    while(aux!=NULL){
+        if(aux->name!=NULL){
+            printf("%s\t%s", aux->name, aux->type);
+            
+            if(strcmp(aux->params, "")!=0){
+                printf("(%s)",aux->params);
+            }
+            printf("\n");
+        }
+        else{
+            printf("%s\n",globalTable->type);
+        }
+        aux = aux->next;
+    }
+    aux = globalTable;
+    printf("\n");
+    while(aux!=NULL){
+        if (aux->nexttf != NULL){
+            printfuncTable(aux->nexttf);
+        }
+        aux = aux->next;
+    }
+    
+}
+
 
 int main(int argc, char **argv){
     if (argc > 1){
@@ -2638,6 +2893,13 @@ int main(int argc, char **argv){
             // erros lex e sintaxe
             flag2 = 1;
             yyparse();
+        }
+        else if(strcmp(argv[1], "-s")==0){
+            flag2 = 1;
+            yyparse();
+            generateTables();
+            printglobaltable();
+            
         }
 
         else{
