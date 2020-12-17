@@ -672,12 +672,21 @@ void startFunctionT(struct nodetg* nglobal){
     strcpy(newN->type, functH);
     newN->params = 0,
     nglobal->nexttf = newN;
+
+
+    struct nodetf* returnN = (nodetf*)malloc(sizeof(nodetf));
+    returnN->name = (char*)malloc(256*sizeof(char));
+    returnN->name = "return";
+    returnN->type = strdup(nglobal->type);
+
+    returnN->params=0;
+    newN->next = returnN;
     
 }
 
 void insertFunctionT(char* name, char *type, int params, struct nodetf* nodefunc){
     struct nodetf* aux = nodefunc;
-
+    
     while(aux->next!=NULL){
         if (aux->name != NULL && strcmp(aux->next->name, name)==0){
             return;
@@ -689,7 +698,9 @@ void insertFunctionT(char* name, char *type, int params, struct nodetf* nodefunc
         aux = aux->next;
     }
     struct nodetf* res = (nodetf*)malloc(sizeof(nodetf));
+    
     res->name = name;
+    
     res->type = type;
     res->params = params;
     res->next = NULL;
@@ -727,9 +738,11 @@ char * generateParams(struct node* head){
     return params;
 }
 void insertFunctionBody(struct node* head, struct nodetg* nodeGlobal){
+    
     struct node* aux = head;
-    puts(aux->type);
+
     if(strcmp(aux->type, "Declaration")==0){
+        
         char *type = strdup(aux->childs[0]->type);
         type[0] = type[0]+32;
         insertFunctionT( aux->childs[1]->value, type, 0, nodeGlobal->nexttf);
@@ -737,6 +750,7 @@ void insertFunctionBody(struct node* head, struct nodetg* nodeGlobal){
 
     aux = aux->childs[0];
     while(aux!=NULL){
+        
         insertFunctionBody(aux, nodeGlobal);
         aux=aux->bros;
     }
@@ -782,7 +796,7 @@ void funcdefinitionCheck(struct node* head){
     
     startFunctionT(newN);
     insertParams(head->childs[2], newN);
-    insertFunctionBody(head->childs[2], newN);
+    insertFunctionBody(head->childs[3], newN);
 
 }
 
@@ -797,16 +811,17 @@ void generateTables(){
             aux = aux->childs[0];
         }
         else{
-            if(strcmp(aux->type, "Declaration")==0){
-                
-                declarationCheck(aux);
-            }
+           
             if(strcmp(aux->type, "FuncDeclaration")==0){
                 
                 funcdeclarationCheck(aux);
             }
             if(strcmp(aux->type, "FuncDefinition")==0){
                 funcdefinitionCheck(aux);
+            }
+            else{
+               
+                declarationCheck(aux);
             }
             aux=aux->bros;
         }
@@ -830,6 +845,7 @@ void printfuncTable(struct nodetf* nodeF){
         }
         aux=aux->next;
     }
+    printf("\n");
 }
 
 void printglobaltable(){
@@ -891,6 +907,9 @@ int main(int argc, char **argv){
             yyparse();
             generateTables();
             printglobaltable();
+            if(printtreeflag == 1){
+            printtree(head, 0);
+            }
             
         }
 
