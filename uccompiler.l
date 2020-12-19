@@ -1,7 +1,10 @@
 
+
 %X SINGLECOMMENT MULTICOMMENT
 
 %{
+	//Dinis Carvalho 2018278118
+	//Joao Teixeira 2018278532
     #include <string.h>
 	#include "y.tab.h"
     int flag1;	//tokens encontrados

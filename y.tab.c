@@ -101,7 +101,7 @@
         int params;
         struct nodetf* next;
     }nodetf;
-
+    
     typedef struct nodetg{
         char* type;
         char* name;
@@ -111,7 +111,7 @@
     }nodetg;
 
     struct nodetg* globalTable;
-
+    struct nodetf* current;
     typedef struct node{
         char* type; 
         char* value;
@@ -127,7 +127,7 @@
     struct node* addchild(node *dad, node *child);
     struct node* addbro(node *n1, node *n2);
     void printtree(node *head, int level);
-
+    char* currentF;
 
 
 #line 134 "y.tab.c"
@@ -2645,25 +2645,26 @@ void printtreeAnnotations(struct node *head, int level){
         
         if (strcmp(head->value, "") != 0){
             if(head->note != NULL){
-                printf("%s(%s) - %s", head->type, head->value, head->note);
-                free(head->note);
+                printf("%s(%s) - %s\n", head->type, head->value, head->note);
+            
             }
             else{
-                printf("%s(%s)\n", head->type, head->value);    
+                printf("%s(%s)\n", head->type, head->value);   
             }
             
         }
         else{
             if(head->note != NULL){
-                printf("%s - %s", head->type, head->note);
-                free(head->note);
+                printf("%s - %s\n", head->type, head->note);
+                
             }
             else{printf("%s\n", head->type);}
         }
         for (int j = 0; j < head->nchildren; j++){
-            printtree(head->childs[j], level + 1);
+            printtreeAnnotations(head->childs[j], level + 1);
         }
-        free(head); //funçao recursiva, vai libertar cada nó depois de o printar
+        if(head){free(head);}
+         //funçao recursiva, vai libertar cada nó depois de o printar
 }
 
 struct nodetg* insertGlobal(char* name, char* type, char* params){
@@ -2887,6 +2888,77 @@ void printfuncTable(struct nodetf* nodeF){
     }
     printf("\n");
 }
+struct nodetf* searchTable(char* name){
+    struct nodetg* aux = globalTable;
+    char* string = (char*)malloc(256*sizeof(char));
+    sprintf(string, "===== Function %s Symbol Table =====", name);
+    while(aux!=NULL){
+        if(aux->nexttf!=NULL){
+            if(strcmp(string, aux->nexttf->type)==0){
+                return aux->nexttf;
+            }
+        }
+        aux = aux->next;
+    }
+    
+    return NULL;
+}
+
+char* searchId(struct nodetf* functions, struct node* head){
+    
+    struct nodetf* aux = functions;
+    
+    //printf("comecei\n");
+    //printf("HEAD VALUE %s\n", head->value);
+    //printf("À procura na função %s\n", functions->type);
+
+    while(aux!=NULL){
+        if(aux->name){
+            if(strcmp(aux->name, head->value)==0){
+                puts(aux->name);
+                printf("return bem");
+                return strdup(aux->type);
+            }
+        }
+        aux = aux->next;
+    }
+    
+    printf("return null\n");
+    return NULL;
+}
+
+char* findTableAndAnnotate(struct node* head){
+    
+    if(head!=NULL){
+        struct nodetg* finder= globalTable;
+        struct nodetf* auxF;
+        char* varName = head->value;
+
+        char* tabName = (char*)malloc(256*sizeof(char));
+        sprintf(tabName, "===== Function %s Symbol Table =====", currentF);
+        while(finder!=NULL){
+            if(finder->nexttf!=NULL){
+                auxF = finder->nexttf;
+                if(strcmp(currentF,"")!=0){
+                    if (strcmp(finder->nexttf->type, tabName)==0){
+                        while(auxF){
+                            if(auxF->name){
+                                if(strcmp(auxF->name, varName)==0){
+                                    head->note = auxF->type;
+                                }
+                            }
+                            auxF = auxF->next;
+                        }
+                    }
+                
+                } 
+            }
+            finder = finder->next;
+        }
+    }
+    return NULL;
+
+}
 
 void annotate(struct node* head){
     if(head == NULL){
@@ -2898,99 +2970,116 @@ void annotate(struct node* head){
     }
 
     else if(strcmp(head->type, "IntLit")==0){
-        head->note = (char*)malloc(24*sizeof(char));
+        head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int"); 
     }
     else if(strcmp(head->type, "ChrLit")==0){
-        head->note = (char*)malloc(24*sizeof(char));
+        head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
     }
     else if(strcmp(head->type, "RealLit")==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
+        head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("double");
     }
 
     else if(strcmp(head->type, "BitWiseAnd")==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
+        head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
     }
     else if(strcmp(head->type, "BitWiseOr")==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
+        head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
     else if(strcmp(head->type, "BitWiseXor")==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
+        head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
     else if(strcmp(head->type, "And")==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
+        head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
     else if(strcmp(head->type, "Or")==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
+        head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
-    else if(strcmp(head->type, "Eq")==0 || strcmp(head->type, "Ne")==0 || strcmp(head->type, "Mod")==0 || strcmp(head->type, "Le")==0 || strcmp(head->type, "Ge")==0 || strcmp(head->type, "Lt")==0 || strcmp(head->type, "GT")==0 ){
+    else if(strcmp(head->type, "Eq")==0 || strcmp(head->type, "Ne")==0 || strcmp(head->type, "Mod")==0 || strcmp(head->type, "Le")==0 || strcmp(head->type, "Ge")==0 || strcmp(head->type, "Lt")==0 || strcmp(head->type, "Gt")==0 ){
         annotate(head->childs[0]);
-        head->note= (char*)malloc(24*sizeof(char));
+        head->note= (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
     }
-    /*
+    
     else if(strcmp(head->type, "Call") ==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
-        if(head->childs[0]!=NULL){
+        head->note = (char*)malloc(64*sizeof(char));
+        if(head->childs[0]->note!=NULL){
         head->note = strdup(head->childs[0]->note);
         }
     }
-    */
+    
+
     else if(strcmp(head->type, "Store") ==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
-        if(head->childs[0]!=NULL){
-        head->note = strdup(head->childs[0]->note);
+        head->note = (char*)malloc(64*sizeof(char));
+        if(head->childs[0]->note!=NULL){
+            head->note = strdup(head->childs[0]->note);
         }
     }
-
+    
     else if(strcmp(head->type, "Comma") ==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
-        if(head->childs[1]!=NULL){
+        head->note = (char*)malloc(64*sizeof(char));
+        if(head->childs[1]->note !=NULL){
         head->note = strdup(head->childs[1]->note);
         }
     }
 
     else if(strcmp(head->type, "Minus") ==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
-        if(head->childs[0]!=NULL){
+        head->note = (char*)malloc(64*sizeof(char));
+        if(head->childs[0]->note!=NULL){
             head->note = strdup(head->childs[0]->note);
         }
     }
     else if(strcmp(head->type, "Plus") ==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
-        if(head->childs[0]!=NULL){
+        head->note = (char*)malloc(64*sizeof(char));
+        if(head->childs[0]->note!=NULL){
             head->note = strdup(head->childs[0]->note);
         }
         
     }
     else if(strcmp(head->type, "Not") ==0){
         annotate(head->childs[0]);
-        head->note = (char*)malloc(24*sizeof(char));
+        head->note = (char*)malloc(64*sizeof(char));
         head->note = "int";
     }
-    
+    else if(strcmp(head->type, "FuncDefinition")==0){
+        currentF = strdup(head->childs[1]->value);
+        annotate(head->childs[2]);
+        
+        
+        //current = searchTable(head->childs[1]->value);
+        
+        //printf("%s\n", current->type);
+    }
+
+    else if(strcmp(head->type, "Id")==0){
+        findTableAndAnnotate(head);
+        //res = searchId(current, head);
+        //if(res!=NULL){
+        //head->note = strdup(res);   
+        //}
+    }
     
     else{
         if(head->childs[0]!=NULL){
@@ -3003,6 +3092,10 @@ void annotate(struct node* head){
     }
     
 }
+
+
+
+
 
 void printglobaltable(){
     struct nodetg* aux = globalTable;
@@ -3033,6 +3126,7 @@ void printglobaltable(){
 
 
 int main(int argc, char **argv){
+    currentF = (char*)malloc(256*sizeof(char));
     if (argc > 1){
         if (strcmp(argv[1], "-l") == 0){
             //lex completo
@@ -3060,6 +3154,7 @@ int main(int argc, char **argv){
         }
         else if(strcmp(argv[1], "-s")==0){
             flag2 = 1;
+            
             yyparse();
             generateTables();
             printglobaltable();
