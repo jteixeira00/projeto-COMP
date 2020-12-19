@@ -22,7 +22,7 @@ Program
 ....ParamList
 ......ParamDeclaration
 ........Double
-........Id(a) - double
+........Id(a)
 ....FuncBody
 ......Return
 ........IntLit(0) - int
@@ -35,19 +35,19 @@ Program
 ....FuncBody
 ......Declaration
 ........Char
-........Id(a) - char
+........Id(a)
 ........ChrLit('a') - int
 ......Declaration
 ........Short
-........Id(b) - short
+........Id(b)
 ........IntLit(2) - int
 ......Declaration
 ........Int
-........Id(c) - int
+........Id(c)
 ........IntLit(3) - int
 ......Declaration
 ........Double
-........Id(d) - double
+........Id(d)
 ........RealLit(3.0) - double
 ......If
 ........Store - char
@@ -170,181 +170,181 @@ Program
 ........Null
 ........Null
 ......If
-........Add
+........Add - char
 ..........Id(a) - char
 ..........Id(a) - char
 ........Null
 ........Null
 ......If
-........Add
-..........Id(a) - char
-..........Id(b) - short
-........Null
-........Null
-......If
-........Add
-..........Id(a) - char
-..........Id(c) - int
-........Null
-........Null
-......If
-........Add
-..........Id(a) - char
-..........Id(d) - double
-........Null
-........Null
-......If
-........Add
-..........Id(b) - short
-..........Id(b) - short
-........Null
-........Null
-......If
-........Add
-..........Id(b) - short
-..........Id(c) - int
-........Null
-........Null
-......If
-........Add
-..........Id(b) - short
-..........Id(d) - double
-........Null
-........Null
-......If
-........Add
-..........Id(c) - int
-..........Id(c) - int
-........Null
-........Null
-......If
-........Add
-..........Id(c) - int
-..........Id(d) - double
-........Null
-........Null
-......If
-........Add
-..........Id(d) - double
-..........Id(d) - double
-........Null
-........Null
-......If
-........Mul
-..........Id(a) - char
-..........Id(a) - char
-........Null
-........Null
-......If
-........Mul
+........Add - short
 ..........Id(a) - char
 ..........Id(b) - short
 ........Null
 ........Null
 ......If
-........Mul
+........Add - int
 ..........Id(a) - char
 ..........Id(c) - int
 ........Null
 ........Null
 ......If
-........Mul
+........Add - double
 ..........Id(a) - char
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Mul
+........Add - short
 ..........Id(b) - short
 ..........Id(b) - short
 ........Null
 ........Null
 ......If
-........Mul
+........Add - int
 ..........Id(b) - short
 ..........Id(c) - int
 ........Null
 ........Null
 ......If
-........Mul
+........Add - double
 ..........Id(b) - short
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Mul
+........Add - int
 ..........Id(c) - int
 ..........Id(c) - int
 ........Null
 ........Null
 ......If
-........Mul
+........Add - double
 ..........Id(c) - int
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Mul
+........Add - double
 ..........Id(d) - double
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - char
 ..........Id(a) - char
 ..........Id(a) - char
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - short
 ..........Id(a) - char
 ..........Id(b) - short
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - int
 ..........Id(a) - char
 ..........Id(c) - int
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - double
 ..........Id(a) - char
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - short
 ..........Id(b) - short
 ..........Id(b) - short
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - int
 ..........Id(b) - short
 ..........Id(c) - int
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - double
 ..........Id(b) - short
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - int
 ..........Id(c) - int
 ..........Id(c) - int
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - double
 ..........Id(c) - int
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Sub
+........Mul - double
+..........Id(d) - double
+..........Id(d) - double
+........Null
+........Null
+......If
+........Sub - char
+..........Id(a) - char
+..........Id(a) - char
+........Null
+........Null
+......If
+........Sub - short
+..........Id(a) - char
+..........Id(b) - short
+........Null
+........Null
+......If
+........Sub - int
+..........Id(a) - char
+..........Id(c) - int
+........Null
+........Null
+......If
+........Sub - double
+..........Id(a) - char
+..........Id(d) - double
+........Null
+........Null
+......If
+........Sub - short
+..........Id(b) - short
+..........Id(b) - short
+........Null
+........Null
+......If
+........Sub - int
+..........Id(b) - short
+..........Id(c) - int
+........Null
+........Null
+......If
+........Sub - double
+..........Id(b) - short
+..........Id(d) - double
+........Null
+........Null
+......If
+........Sub - int
+..........Id(c) - int
+..........Id(c) - int
+........Null
+........Null
+......If
+........Sub - double
+..........Id(c) - int
+..........Id(d) - double
+........Null
+........Null
+......If
+........Sub - double
 ..........Id(d) - double
 ..........Id(d) - double
 ........Null
@@ -410,61 +410,61 @@ Program
 ........Null
 ........Null
 ......If
-........Div
+........Div - char
 ..........Id(a) - char
 ..........Id(a) - char
 ........Null
 ........Null
 ......If
-........Div
+........Div - short
 ..........Id(a) - char
 ..........Id(b) - short
 ........Null
 ........Null
 ......If
-........Div
+........Div - int
 ..........Id(a) - char
 ..........Id(c) - int
 ........Null
 ........Null
 ......If
-........Div
+........Div - double
 ..........Id(a) - char
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Div
+........Div - short
 ..........Id(b) - short
 ..........Id(b) - short
 ........Null
 ........Null
 ......If
-........Div
+........Div - int
 ..........Id(b) - short
 ..........Id(c) - int
 ........Null
 ........Null
 ......If
-........Div
+........Div - double
 ..........Id(b) - short
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Div
+........Div - int
 ..........Id(c) - int
 ..........Id(c) - int
 ........Null
 ........Null
 ......If
-........Div
+........Div - double
 ..........Id(c) - int
 ..........Id(d) - double
 ........Null
 ........Null
 ......If
-........Div
+........Div - double
 ..........Id(d) - double
 ..........Id(d) - double
 ........Null
@@ -1185,25 +1185,25 @@ Program
 ........Null
 ........Null
 ......If
-........Call - 
-..........Id(f1)
+........Call - int(double)
+..........Id(f1) - int(double)
 ........Null
 ........Null
 ......If
-........Call - 
-..........Id(f1)
+........Call - int(double)
+..........Id(f1) - int(double)
 ..........Id(a) - char
 ........Null
 ........Null
 ......If
-........Call - 
-..........Id(f1)
+........Call - int(double)
+..........Id(f1) - int(double)
 ..........Id(b) - short
 ........Null
 ........Null
 ......If
-........Call - 
-..........Id(f1)
+........Call - int(double)
+..........Id(f1) - int(double)
 ..........Id(a) - char
 ..........Id(b) - short
 ........Null

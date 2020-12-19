@@ -947,6 +947,27 @@ char* findTableAndAnnotate(struct node* head){
             }
             finder = finder->next;
         }
+        finder = globalTable;
+        while(finder!=NULL){
+            if(finder->name!=NULL){
+                if(strcmp(finder->name, varName)==0){
+                    head->note = (char*)malloc(256*sizeof(char));
+                    if(finder->params!=NULL && strcmp(finder->params, "")!=0){
+                         sprintf(head->note, "%s(%s)", finder->type, finder->params);
+                    }
+                    else{
+
+                        head->note = strdup(finder->type);
+                    }
+                    
+                }
+            }
+            finder = finder->next;
+
+        }
+
+
+
     }
     return NULL;
 
@@ -958,6 +979,11 @@ void annotate(struct node* head){
     }
     else if((strcmp(head->type, "Program")==0)|| (strcmp(head->type,"FuncBody")==0)){
         annotate(head->childs[0]);
+        return;
+    }
+    else if((strcmp(head->type, "Declaration")==0) || (strcmp(head->type, "ParamDeclaration")==0) || (strcmp(head->type, "FuncDeclaration")==0)){
+        annotate(head->bros);
+        annotate(head->childs[2]);
         return;
     }
 
@@ -1013,8 +1039,16 @@ void annotate(struct node* head){
     else if(strcmp(head->type, "Call") ==0){
         annotate(head->childs[0]);
         head->note = (char*)malloc(64*sizeof(char));
+        char* type = (char*)malloc(64*sizeof(char));
+        char* params = (char*)malloc(254*sizeof(char));
         if(head->childs[0]->note!=NULL){
-        head->note = strdup(head->childs[0]->note);
+        
+            if(sscanf(head->childs[0]->note, "%s(%s)", type, params)==2){
+                head->childs[0]->note = strdup(type);
+            }
+            else{
+                head->note = strdup(head->childs[0]->note);
+            }
         }
     }
     
@@ -1058,19 +1092,31 @@ void annotate(struct node* head){
     else if(strcmp(head->type, "FuncDefinition")==0){
         currentF = strdup(head->childs[1]->value);
         annotate(head->childs[2]);
-        
-        
-        //current = searchTable(head->childs[1]->value);
-        
-        //printf("%s\n", current->type);
+    }
+    else if(strcmp(head->type, "Add")==0 || strcmp(head->type, "Mul")==0 || strcmp(head->type, "Sub")==0 || strcmp(head->type, "Div")==0){
+        annotate(head->childs[0]);
+        if(head->childs[0]->note!= NULL && head->childs[1]->note!= NULL){
+            if((strcmp(head->childs[0]->note, "double")==0) || (strcmp(head->childs[1]->note, "double")==0)){
+                head->note = (char*)malloc(64*sizeof(char));
+                head->note = "double";
+            }
+            else if((strcmp(head->childs[0]->note, "int")==0) || (strcmp(head->childs[1]->note, "int")==0)){
+                head->note = (char*)malloc(64*sizeof(char));
+                head->note = "int";
+            }
+            else if((strcmp(head->childs[0]->note, "short")==0) || (strcmp(head->childs[1]->note, "short")==0)){
+                head->note = (char*)malloc(64*sizeof(char));
+                head->note = "short";
+            }
+            else if((strcmp(head->childs[0]->note, "char")==0) || (strcmp(head->childs[1]->note, "char")==0)){
+                head->note = (char*)malloc(64*sizeof(char));
+                head->note = "char";
+            }
+        }
     }
 
     else if(strcmp(head->type, "Id")==0){
         findTableAndAnnotate(head);
-        //res = searchId(current, head);
-        //if(res!=NULL){
-        //head->note = strdup(res);   
-        //}
     }
     
     else{
