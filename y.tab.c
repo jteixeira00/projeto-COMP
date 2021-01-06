@@ -3011,29 +3011,34 @@ void annotate(struct node* head){
 
     else if(strcmp(head->type, "BitWiseAnd")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
     }
     else if(strcmp(head->type, "BitWiseOr")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
     else if(strcmp(head->type, "BitWiseXor")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
     else if(strcmp(head->type, "And")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
     else if(strcmp(head->type, "Or")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
@@ -3048,11 +3053,12 @@ void annotate(struct node* head){
         annotate(head->childs[0]);
         head->note = (char*)malloc(64*sizeof(char));
         char* type = (char*)malloc(64*sizeof(char));
-        char* params = (char*)malloc(254*sizeof(char));
+        char* aux = (char*)malloc(256*sizeof(char));
         if(head->childs[0]->note!=NULL){
-        
-            if(sscanf(head->childs[0]->note, "%s(%s)", type, params)==2){
-                head->childs[0]->note = strdup(type);
+            aux = strdup(head->childs[0]->note);
+            type = strtok(aux, "(");
+            if(type!=NULL){
+                head->note = type;
             }
             else{
                 head->note = strdup(head->childs[0]->note);

@@ -880,44 +880,6 @@ void printfuncTable(struct nodetf* nodeF){
     }
     printf("\n");
 }
-struct nodetf* searchTable(char* name){
-    struct nodetg* aux = globalTable;
-    char* string = (char*)malloc(256*sizeof(char));
-    sprintf(string, "===== Function %s Symbol Table =====", name);
-    while(aux!=NULL){
-        if(aux->nexttf!=NULL){
-            if(strcmp(string, aux->nexttf->type)==0){
-                return aux->nexttf;
-            }
-        }
-        aux = aux->next;
-    }
-    
-    return NULL;
-}
-
-char* searchId(struct nodetf* functions, struct node* head){
-    
-    struct nodetf* aux = functions;
-    
-    //printf("comecei\n");
-    //printf("HEAD VALUE %s\n", head->value);
-    //printf("À procura na função %s\n", functions->type);
-
-    while(aux!=NULL){
-        if(aux->name){
-            if(strcmp(aux->name, head->value)==0){
-                puts(aux->name);
-                printf("return bem");
-                return strdup(aux->type);
-            }
-        }
-        aux = aux->next;
-    }
-    
-    printf("return null\n");
-    return NULL;
-}
 
 char* findTableAndAnnotate(struct node* head){
     
@@ -1003,29 +965,34 @@ void annotate(struct node* head){
 
     else if(strcmp(head->type, "BitWiseAnd")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
     }
     else if(strcmp(head->type, "BitWiseOr")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
     else if(strcmp(head->type, "BitWiseXor")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
     else if(strcmp(head->type, "And")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
     }
     else if(strcmp(head->type, "Or")==0){
         annotate(head->childs[0]);
+        annotate(head->bros);
         head->note = (char*)malloc(64*sizeof(char));
         head->note = strdup("int");
         return;
@@ -1040,11 +1007,12 @@ void annotate(struct node* head){
         annotate(head->childs[0]);
         head->note = (char*)malloc(64*sizeof(char));
         char* type = (char*)malloc(64*sizeof(char));
-        char* params = (char*)malloc(254*sizeof(char));
+        char* aux = (char*)malloc(256*sizeof(char));
         if(head->childs[0]->note!=NULL){
-        
-            if(sscanf(head->childs[0]->note, "%s(%s)", type, params)==2){
-                head->childs[0]->note = strdup(type);
+            aux = strdup(head->childs[0]->note);
+            type = strtok(aux, "(");
+            if(type!=NULL){
+                head->note = type;
             }
             else{
                 head->note = strdup(head->childs[0]->note);
@@ -1131,10 +1099,6 @@ void annotate(struct node* head){
     
 }
 
-
-
-
-
 void printglobaltable(){
     struct nodetg* aux = globalTable;
     while(aux!=NULL){
@@ -1162,6 +1126,57 @@ void printglobaltable(){
     
 }
 
+//generate code
+
+char* getType(char* type){
+    if (strcmp(type, "Int") == 0 || strcmp(type, "int") == 0)  {
+    return "i32";
+  }
+  else if (strcmp(type, "Short") == 0 || strcmp(type, "short") == 0) {
+    return "i16";
+  }
+  else if (strcmp(type, "Double") == 0 || strcmp(type, "double") == 0) {
+    return "i64";
+  }
+  else if (strcmp(type, "Char") == 0 || strcmp(type, "char") == 0) {
+    return "i8";
+  }
+  else if (strcmp(type, "Void") == 0 || strcmp(type, "void") == 0) {
+    return "void";
+  }
+  return "";
+}
+
+void generateProgram(){
+    printf("declare i32 @getchar()\n");
+    printf("declare i32 @putchar(i32)\n");
+}
+
+void generateDeclaration(struct node* head){
+    struct node* aux = head->childs[0];
+    struct nodetg* varTable = findTable(aux->bros); 
+
+
+
+}
+
+void generateCode(struct node* head){
+    if(head == NULL){
+        return;
+    }
+
+    if(strcmp(head->type, "Program")==0){
+        generateProgram();
+        generateCode(head->childs[0]);
+    }
+
+    else if(strcmp(head->type, "Declaration")== 0){
+        generateDeclaration(head);
+    }
+
+
+
+}
 
 int main(int argc, char **argv){
     currentF = (char*)malloc(256*sizeof(char));

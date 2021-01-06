@@ -1,3 +1,30 @@
+Line 17, col 5: Operator ! cannot be applied to type int(void)
+Line 20, col 5: Operator ! cannot be applied to type double
+Line 22, col 6: Operator ! cannot be applied to type double
+Line 26, col 10: Operator ^ cannot be applied to types int, double
+Line 27, col 10: Operator ^ cannot be applied to types double, double
+Line 28, col 10: Operator ^ cannot be applied to types double, int(void)
+Line 29, col 12: Operator & cannot be applied to types int(void), int(void)
+Line 30, col 12: Operator & cannot be applied to types int(void), int(void)
+Line 34, col 8: Operator % cannot be applied to types double, int
+Line 34, col 28: Operator % cannot be applied to types char, double
+Line 34, col 38: Operator % cannot be applied to types char, double
+Line 38, col 8: Operator & cannot be applied to types char, double
+Line 39, col 13: Operator ^ cannot be applied to types int, int(void)
+Line 40, col 8: Operator + cannot be applied to types char, int(void)
+Line 41, col 8: Operator + cannot be applied to types double, int(void)
+Line 42, col 8: Operator + cannot be applied to types short, int(void)
+Line 43, col 8: Operator + cannot be applied to types int, int(void)
+Line 44, col 10: Operator + cannot be applied to types int(void), char
+Line 45, col 10: Operator + cannot be applied to types int(void), double
+Line 46, col 10: Operator + cannot be applied to types int(void), short
+Line 47, col 10: Operator + cannot be applied to types int(void), int
+Line 48, col 51: Operator && cannot be applied to types int, double
+Line 49, col 19: Operator && cannot be applied to types int, double
+Line 50, col 36: Operator || cannot be applied to types int, double
+Line 51, col 43: Operator && cannot be applied to types int, double
+Line 53, col 29: Operator || cannot be applied to types int, double
+Line 55, col 8: Operator || cannot be applied to types char, double
 ===== Global Symbol Table =====
 putchar	int(int)
 getchar	int(void)
@@ -269,28 +296,28 @@ Program
 ..........Id(C0) - char
 ..........Id(C0) - char
 ........Id(main) - int(void)
-......Add - char
+......Add - undef
 ........Id(C0) - char
 ........Id(main) - int(void)
-......Add - double
+......Add - undef
 ........Id(Z1) - double
 ........Id(main) - int(void)
-......Add - short
+......Add - undef
 ........Id(B1) - short
 ........Id(main) - int(void)
-......Add - int
+......Add - undef
 ........Id(A0) - int
 ........Id(main) - int(void)
-......Add - char
+......Add - undef
 ........Id(main) - int(void)
 ........Id(C0) - char
-......Add - double
+......Add - undef
 ........Id(main) - int(void)
 ........Id(Z1) - double
-......Add - short
+......Add - undef
 ........Id(main) - int(void)
 ........Id(B1) - short
-......Add - int
+......Add - undef
 ........Id(main) - int(void)
 ........Id(A0) - int
 ......Or - int

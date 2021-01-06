@@ -1,0 +1,252 @@
+Line 14, col 6: Conflicting types (got char(void), expected int)
+Line 15, col 4: Operator = cannot be applied to types int, double
+Line 16, col 4: Operator = cannot be applied to types int, char(void)
+Line 17, col 2: Symbol f is not a function
+Line 18, col 2: Wrong number of arguments to function ola (got 1, required 0)
+Line 19, col 6: Unknown symbol j
+Line 19, col 2: Wrong number of arguments to function ola (got 1, required 0)
+Line 22, col 9: Unknown symbol e
+Line 22, col 11: Operator || cannot be applied to types undef, char
+Line 22, col 25: Operator || cannot be applied to types int, double
+Line 24, col 10: Operator = cannot be applied to types void(void), void
+Line 28, col 2: Unknown symbol q
+Line 28, col 6: Unknown symbol r
+Line 28, col 4: Operator = cannot be applied to types undef, undef
+Line 29, col 6: Unknown symbol r
+Line 29, col 4: Operator = cannot be applied to types int, undef
+Line 29, col 2: Lvalue required
+Line 30, col 4: Operator = cannot be applied to types int, int(void)
+Line 41, col 4: Operator = cannot be applied to types short, double
+Line 44, col 3: Operator + cannot be applied to types short, int(void)
+Line 45, col 4: Operator % cannot be applied to types short, int(void)
+Line 47, col 19: Operator * cannot be applied to types int(void), int
+Line 47, col 12: Operator - cannot be applied to types short, undef
+Line 47, col 4: Operator = cannot be applied to types short, undef
+Line 50, col 8: Operator | cannot be applied to types double, int
+Line 51, col 4: Operator & cannot be applied to types double, int
+Line 52, col 4: Operator | cannot be applied to types double, int
+Line 53, col 4: Operator | cannot be applied to types double, void
+Line 57, col 8: Operator > cannot be applied to types void(void), int
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+f	int
+v	int(void)
+ola	char(void)
+adeus	void(void)
+main	int(void)
+
+===== Function ola Symbol Table =====
+return	char
+
+===== Function adeus Symbol Table =====
+return	void
+
+===== Function main Symbol Table =====
+return	int
+a	int
+d	int
+u	double
+i	short
+t	short
+p	double
+l	short
+
+Program
+..Declaration
+....Int
+....Id(f)
+..FuncDeclaration
+....Int
+....Id(v)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Char
+....Id(ola)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Return
+........ChrLit('x') - int
+..FuncDefinition
+....Void
+....Id(adeus)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Return
+........Null
+..FuncDefinition
+....Int
+....Id(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Int
+........Id(a)
+......Declaration
+........Int
+........Id(d)
+........Id(ola) - char(void)
+......Store - int
+........Id(f) - int
+........RealLit(4.5) - double
+......Store - undef
+........Id(f) - int
+........Id(ola) - char(void)
+......Call - int
+........Id(f) - int
+......Call - char
+........Id(ola) - char(void)
+........Id(a) - int
+......Call - char
+........Id(ola) - char(void)
+........Id(j) - undef
+......If
+........Call - char
+..........Id(ola) - char(void)
+........While
+..........Or - int
+............Or - int
+..............Or - int
+................Id(e) - undef
+................Call - char
+..................Id(ola) - char(void)
+..............IntLit(1) - int
+............RealLit(3.4) - double
+..........StatList
+............Call - int
+..............Id(main) - int(void)
+............Store - undef
+..............Id(adeus) - void(void)
+..............Call - void
+................Id(adeus) - void(void)
+........Null
+......Store - undef
+........Id(q) - undef
+........Id(r) - undef
+......Store - int
+........IntLit(2) - int
+........Id(r) - undef
+......Store - undef
+........Id(a) - int
+........Id(v) - int(void)
+......Store - int
+........Id(f) - int
+........Call - char
+..........Id(ola) - char(void)
+......Declaration
+........Double
+........Id(u)
+......Store - double
+........Id(u) - double
+........RealLit(3.4) - double
+......Store - double
+........Id(u) - double
+........ChrLit('0') - int
+......Store - double
+........Id(u) - double
+........ChrLit('\n') - int
+......Store - double
+........Id(u) - double
+........IntLit(2) - int
+......Declaration
+........Short
+........Id(i)
+......Store - double
+........Id(u) - double
+........Id(i) - short
+......Declaration
+........Short
+........Id(t)
+......Store - short
+........Id(t) - short
+........RealLit(3.4) - double
+......Add - double
+........Id(t) - short
+........RealLit(2.3) - double
+......Add - undef
+........Id(t) - short
+........Id(main) - int(void)
+......Mod - int
+........Id(t) - short
+........Id(main) - int(void)
+......Div - double
+........Id(t) - short
+........RealLit(0.0) - double
+......Store - short
+........Id(t) - short
+........Sub - undef
+..........Add - short
+............Id(t) - short
+............Id(t) - short
+..........Mul - undef
+............Id(main) - int(void)
+............ChrLit('3') - int
+......Mul - int
+........ChrLit('3') - int
+........IntLit(4) - int
+......Declaration
+........Double
+........Id(p)
+......Store - double
+........Id(p) - double
+........BitWiseOr - int
+..........Id(p) - double
+..........IntLit(1) - int
+......BitWiseAnd - int
+........Id(p) - double
+........ChrLit('2') - int
+......BitWiseOr - int
+........Id(p) - double
+........Call - int
+..........Id(v) - int(void)
+......BitWiseOr - int
+........Id(p) - double
+........Call - void
+..........Id(adeus) - void(void)
+......Declaration
+........Short
+........Id(l)
+......BitWiseAnd - int
+........Id(l) - short
+........Id(l) - short
+......Gt - int
+........Id(l) - short
+........IntLit(2) - int
+......Gt - int
+........Id(adeus) - void(void)
+........Call - int
+..........Id(v) - int(void)
+......Lt - int
+........IntLit(3) - int
+........RealLit(0.0) - double
+......Eq - int
+........ChrLit('e') - int
+........RealLit(2.33) - double
+......Eq - int
+........Not - int
+..........ChrLit('o') - int
+........Minus - int
+..........Not - int
+............Minus - int
+..............Not - int
+................Plus - int
+..................IntLit(5) - int
+......Comma - int
+........Comma - int
+..........Comma - int
+............Not - int
+..............IntLit(4) - int
+............IntLit(2) - int
+..........Plus - int
+............IntLit(2) - int
+........Ne - int
+..........IntLit(2) - int
+..........IntLit(3) - int
